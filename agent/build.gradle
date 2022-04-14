@@ -1,0 +1,15 @@
+compileJava {
+    doFirst {
+        options.compilerArgs << '--module-path' << classpath.asPath
+    }
+    options.compilerArgs << '--add-modules' << [
+            'java.instrument',
+            'io.vproxy.pojoagent.api',
+    ].join(',')
+    options.compilerArgs << '--add-exports' << 'java.base/jdk.internal.org.objectweb.asm=io.vproxy.pojoagent.agent'
+    options.compilerArgs << '--add-exports' << 'java.base/jdk.internal.org.objectweb.asm.tree=io.vproxy.pojoagent.agent'
+}
+
+jar {
+    archiveName "pojo-agent-agent.jar"
+}

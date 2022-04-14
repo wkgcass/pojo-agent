@@ -1,0 +1,87 @@
+plugins {
+    id 'java-library'
+}
+
+group 'io.vproxy'
+version loadVersion()
+
+subprojects {
+    apply plugin: 'java-library'
+
+    group 'io.vproxy'
+    version loadVersion()
+
+    sourceCompatibility = 11.0
+    targetCompatibility = 11.0
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+project(':api') {
+    dependencies {
+    }
+}
+
+project(':agent') {
+    dependencies {
+        api project(':api')
+    }
+}
+
+project(':all') {
+    dependencies {
+        api project(':api')
+        api project(':agent')
+    }
+}
+
+project(':sample') {
+    dependencies {
+        implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.0.1'
+        implementation project(":api")
+    }
+
+    task sample(type: JavaExec) {
+        jvmArgs "-javaagent:${rootProject.buildDir.getAbsolutePath()}${File.separator}libs${File.separator}pojo-agent.jar"
+        jvmArgs "--add-opens"
+        jvmArgs "java.base/jdk.internal.org.objectweb.asm=ALL-UNNAMED"
+        jvmArgs "--add-opens"
+        jvmArgs "java.base/jdk.internal.org.objectweb.asm.tree=ALL-UNNAMED"
+        classpath = sourceSets.main.runtimeClasspath
+        mainClass = 'my.test.Main'
+
+        dependsOn(rootProject.jar)
+    }
+}
+
+dependencies {
+    api project(':all')
+}
+
+jar {
+    archiveName 'pojo-agent.jar'
+    manifest {
+        attributes 'Premain-Class': 'io.vproxy.pojoagent.agent.Premain'
+        attributes 'Agent-Class': 'io.vproxy.pojoagent.agent.Premain'
+    }
+    exclude 'module-info.class'
+    from {
+        configurations.runtimeClasspath.collect {
+            if (it.name.endsWith("-all.jar")) return null
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+    duplicatesStrategy 'exclude'
+}
+
+static def loadVersion() {
+    return "1.0-SNAPSHOT"
+}

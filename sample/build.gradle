@@ -1,0 +1,12 @@
+compileJava {
+    doFirst {
+        options.compilerArgs << '--module-path' << classpath.asPath
+    }
+    options.compilerArgs << '--add-modules' << [
+            'io.vproxy.pojoagent.api',
+    ].join(',')
+}
+
+jar {
+    archiveName "pojo-agent-example.jar"
+}

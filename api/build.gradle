@@ -1,0 +1,3 @@
+jar {
+    archiveName "pojo-agent-api.jar"
+}

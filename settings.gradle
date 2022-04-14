@@ -1,0 +1,6 @@
+rootProject.name = 'pojo-agent'
+include 'api'
+include 'agent'
+include 'all'
+include 'sample'
+
