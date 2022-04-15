@@ -1,5 +1,6 @@
 plugins {
     id 'java-library'
+    id 'org.jetbrains.kotlin.jvm' version '1.5.31'
 }
 
 group 'io.vproxy'
@@ -7,6 +8,7 @@ version loadVersion()
 
 subprojects {
     apply plugin: 'java-library'
+    apply plugin: 'org.jetbrains.kotlin.jvm'
 
     group 'io.vproxy'
     version loadVersion()
@@ -44,8 +46,13 @@ project(':all') {
 }
 
 project(':sample') {
+    compileKotlin {
+        destinationDir = compileJava.destinationDir
+    }
+
     dependencies {
         implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.0.1'
+        implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jdk8', version: '1.5.31'
         implementation project(":api")
     }
 
@@ -57,6 +64,18 @@ project(':sample') {
         jvmArgs "java.base/jdk.internal.org.objectweb.asm.tree=ALL-UNNAMED"
         classpath = sourceSets.main.runtimeClasspath
         mainClass = 'my.test.Main'
+
+        dependsOn(rootProject.jar)
+    }
+
+    task ktsample(type: JavaExec) {
+        jvmArgs "-javaagent:${rootProject.buildDir.getAbsolutePath()}${File.separator}libs${File.separator}pojo-agent.jar"
+        jvmArgs "--add-opens"
+        jvmArgs "java.base/jdk.internal.org.objectweb.asm=ALL-UNNAMED"
+        jvmArgs "--add-opens"
+        jvmArgs "java.base/jdk.internal.org.objectweb.asm.tree=ALL-UNNAMED"
+        classpath = sourceSets.main.runtimeClasspath
+        mainClass = 'my.test.kt.Main'
 
         dependsOn(rootProject.jar)
     }
