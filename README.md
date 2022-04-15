@@ -2,9 +2,34 @@
 
 A tool which enhances your pojo, powered by java-agent.
 
+**maven**
+
+```xml
+<dependency>
+  <groupId>io.vproxy</groupId>
+  <artifactId>pojo-agent-api</artifactId>
+  <version>1.0.0</version>
+</dependency>
+```
+
+**gradle**
+
+```groovy
+implementation group: 'io.vproxy', name: 'pojo-agent-api', version: '1.0.0'
+```
+
 ## current supported functions
 
 * Helps you know that a setter is invoked or not.
+
+## build
+
+```
+./gradlew clean jar
+```
+
+The agent is in `build/libs/pojo-agent.jar`.  
+You can also get the pre-built agent in the release pages.
 
 ## how to use
 
@@ -25,7 +50,7 @@ public class MyEntity {
 
 or you can use `data class` if you are using kotlin:
 
-```
+```kotlin
 @Pojo
 data class MyEntity(
   var id: String = ""
@@ -61,6 +86,8 @@ PojoAgent.unsetField(entity.getId())
 ### step 4
 
 Add `-javaagent:${path-to-pojo-agent.jar}` to your `java` command.
+
+> If you are using java 17, you may need to add extra arguments: `--add-opens java.base/jdk.internal.org.objectweb.asm=ALL-UNNAMED --add-opens java.base/jdk.internal.org.objectweb.asm.tree=ALL-UNNAMED`
 
 ## sample
 

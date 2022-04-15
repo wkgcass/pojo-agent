@@ -1,6 +1,8 @@
 plugins {
     id 'java-library'
     id 'org.jetbrains.kotlin.jvm' version '1.5.31'
+    id 'maven-publish'
+    id 'signing'
 }
 
 group 'io.vproxy'
@@ -9,6 +11,8 @@ version loadVersion()
 subprojects {
     apply plugin: 'java-library'
     apply plugin: 'org.jetbrains.kotlin.jvm'
+    apply plugin: 'maven-publish'
+    apply plugin: 'signing'
 
     group 'io.vproxy'
     version loadVersion()
@@ -29,6 +33,58 @@ repositories {
 
 project(':api') {
     dependencies {
+    }
+
+    java {
+        withSourcesJar()
+        withJavadocJar()
+    }
+
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                from components.java
+                artifactId 'pojo-agent-api'
+
+                pom {
+                    name = 'pojo-agent-api'
+                    description = 'A tool which enhances your pojo, powered by java-agent.'
+                    url = 'https://github.com/wkgcass/pojo-agent'
+                    licenses {
+                        license {
+                            name = 'GPLv2'
+                            url = 'https://github.com/wkgcass/pojo-agent/blob/master/LICENSE'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = 'wkgcass'
+                            name = 'K.G. Wang'
+                            email = 'wkgcass@hotmail.com'
+                        }
+                    }
+                    scm {
+                        connection = 'scm:git:git://github.com/wkgcass/pojo-agent.git'
+                        developerConnection = 'scm:git:git://github.com/wkgcass/pojo-agent.git'
+                        url = 'https://github.com/wkgcass/pojo-agent'
+                    }
+                }
+            }
+        }
+        repositories {
+            maven {
+                credentials {
+                    username 'wkgcass'
+                    password System.getProperty("MavenPublishPassword")
+                }
+                def releasesRepoUrl = 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
+                def snapshotsRepoUrl = 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
+                url = version.contains('-DEV') ? snapshotsRepoUrl : releasesRepoUrl
+            }
+        }
+    }
+    signing {
+        sign publishing.publications.maven
     }
 }
 
@@ -94,13 +150,24 @@ jar {
     exclude 'module-info.class'
     from {
         configurations.runtimeClasspath.collect {
-            if (it.name.endsWith("-all.jar")) return null
+            if (!it.name.endsWith("pojo-agent-api.jar") && !it.name.endsWith("pojo-agent-agent.jar"))
+                return null
             it.isDirectory() ? it : zipTree(it)
         }
     }
     duplicatesStrategy 'exclude'
 }
 
-static def loadVersion() {
-    return "1.0-SNAPSHOT"
+def loadVersion() {
+    def PREFIX = "public static final String VERSION = \""
+    def SUFFIX = "\"; // _THE_VERSION_"
+    def ver = file(rootProject.projectDir.getAbsolutePath() + "/api/src/main/java/io/vproxy/pojoagent/api/Version.java")
+    def lines = ver.getText().split("\n")
+    for (def line : lines) {
+        line = line.trim()
+        if (line.startsWith(PREFIX) && line.endsWith(SUFFIX)) {
+            return line.substring(PREFIX.length(), line.length() - SUFFIX.length())
+        }
+    }
+    return "unknown"
 }
