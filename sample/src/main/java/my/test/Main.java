@@ -51,5 +51,20 @@ public class Main {
         System.out.println("partial json: name is set?  " + PojoAgent.fieldIsSet(partialBean.getName()));
         System.out.println("partial json: admin is set? " + PojoAgent.fieldIsSet(partialBean.isAdmin()));
         System.out.println("partial json: array is set? " + PojoAgent.fieldIsSet(partialBean.getArray()));
+
+        bean = new Bean();
+        bean.setId(222);
+        bean.setName("wkgcass");
+        bean.setAdmin(true);
+        bean.setArray(new String[]{"test"});
+
+        newBean = new Bean();
+        newBean.setName("modified");
+        newBean.setAdmin(false);
+
+        System.out.println("original bean: " + bean);
+        System.out.println("input bean     " + newBean);
+        bean.updateFrom(newBean);
+        System.out.println("current bean:  " + bean);
     }
 }
