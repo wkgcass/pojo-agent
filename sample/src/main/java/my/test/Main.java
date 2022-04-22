@@ -8,6 +8,8 @@ import io.vproxy.pojoagent.api.PojoCaller;
 public class Main {
     @PojoCaller
     public static void main(String[] args) throws Exception {
+        PojoAgent.ensurePojoAgent();
+
         ObjectMapper om = new ObjectMapper();
 
         var bean = new Bean();

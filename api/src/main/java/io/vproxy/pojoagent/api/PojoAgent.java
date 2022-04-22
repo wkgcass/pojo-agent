@@ -1,5 +1,6 @@
 package io.vproxy.pojoagent.api;
 
+import io.vproxy.pojoagent.api.internal.PojoAgentInternal;
 import io.vproxy.pojoagent.api.internal.RequirePojoCallerException;
 
 @SuppressWarnings("unused")
@@ -77,5 +78,17 @@ public class PojoAgent {
 
     public static void unsetField(boolean o) {
         throw new RequirePojoCallerException();
+    }
+
+    /**
+     * ensure pojo-agent is loaded
+     *
+     * @throws RequirePojoAgentException thrown when pojo-agent is not loaded
+     * @since 1.1.0
+     */
+    public static void ensurePojoAgent() throws RequirePojoAgentException {
+        PojoAgentInternal.ensurePojoAgent();
+        //noinspection ResultOfMethodCallIgnored
+        Version.stringifyVersion(Version.VERSION_INT); // ensure version is loaded
     }
 }
