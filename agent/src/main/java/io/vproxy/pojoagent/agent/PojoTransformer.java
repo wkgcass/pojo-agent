@@ -27,35 +27,117 @@ public class PojoTransformer extends AbstractTransformer {
             return false;
         }
 
-        enhance(node);
-        return true;
+        return enhance(node);
     }
 
     @SuppressWarnings("RedundantThrows")
-    private void enhance(ClassNode node) throws IllegalClassFormatException {
+    private boolean enhance(ClassNode node) throws IllegalClassFormatException {
         var className = node.name;
-        var fields = new ArrayList<String>();
+        var bitsetFields = new ArrayList<ArrayList<String>>();
         for (var meth : node.methods) {
             if (!Utils.isSetter(meth)) {
                 continue;
             }
-            var fieldName = Utils.fieldName(meth.name) + Utils.fieldIsSetSuffix;
-            fields.add(fieldName);
+            ArrayList<String> fields;
+            if (bitsetFields.isEmpty() || bitsetFields.get(bitsetFields.size() - 1).size() == 32) {
+                fields = new ArrayList<>();
+                bitsetFields.add(fields);
+            } else {
+                fields = bitsetFields.get(bitsetFields.size() - 1);
+            }
+            fields.add(Utils.fieldName(meth.name));
+
+            String bitSetFieldName = Utils.fieldIsSetBitSetPrefix + bitsetFields.size();
+            int shift = fields.size() - 1;
 
             InsnList insns = new InsnList();
+            // this.bitsetN = this.bitsetN | (1 << x);
+
             insns.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
-            insns.add(new InsnNode(Opcodes.ICONST_1)); // true
-            insns.add(new FieldInsnNode(Opcodes.PUTFIELD, className, fieldName, "Z")); // this.field = true;
+            // {
+            insns.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+            insns.add(new FieldInsnNode(Opcodes.GETFIELD, className, bitSetFieldName, "I")); // this.bitsetN
+            insns.add(new InsnNode(Opcodes.ICONST_1)); // 1
+            insns.add(new IntInsnNode(Opcodes.BIPUSH, shift)); // x
+            insns.add(new InsnNode(Opcodes.ISHL)); // 1 << x
+            insns.add(new InsnNode(Opcodes.IOR));
+            // }
+            insns.add(new FieldInsnNode(Opcodes.PUTFIELD, className, bitSetFieldName, "I")); // this.bitsetN = ...;
 
             meth.instructions.insert(insns);
 
             Utils.log("setter enhanced: " + className + "." + meth.name + meth.desc);
         }
 
-        for (var field : fields) {
-            node.visitField(Opcodes.ACC_PUBLIC | Opcodes.ACC_SYNTHETIC,
-                field, "Z", "Z", false);
-            Utils.log("field added: " + className + "." + field);
+        for (int i = 0; i < bitsetFields.size(); ++i) {
+            String bitSetFieldName = Utils.fieldIsSetBitSetPrefix + (i + 1);
+            node.visitField(Opcodes.ACC_PRIVATE | Opcodes.ACC_SYNTHETIC,
+                bitSetFieldName, "I", "I", 0);
         }
+        for (int i = 0; i < bitsetFields.size(); ++i) {
+            String bitSetFieldName = Utils.fieldIsSetBitSetPrefix + (i + 1);
+            var fields = bitsetFields.get(i);
+            for (int shift = 0; shift < fields.size(); ++shift) {
+                var field = fields.get(shift);
+                // fieldIsSet
+                {
+                    var meth = new MethodNode(Opcodes.ACC_PUBLIC | Opcodes.ACC_SYNTHETIC,
+                        field + Utils.fieldIsSetMethodSuffix, "()Z", "()Z", null);
+                    // return (this.bitsetN | (1 << x)) == (1 << x)
+                    var insns = new InsnList();
+
+                    insns.add(new InsnNode(Opcodes.ICONST_1)); // 1
+                    insns.add(new IntInsnNode(Opcodes.BIPUSH, shift)); // x
+                    insns.add(new InsnNode(Opcodes.ISHL)); // 1 << x
+                    insns.add(new VarInsnNode(Opcodes.ISTORE, 1)); // var a1 = 1 << x;
+
+                    insns.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+                    insns.add(new FieldInsnNode(Opcodes.GETFIELD, className, bitSetFieldName, "I")); // this.bitsetN
+                    insns.add(new VarInsnNode(Opcodes.ILOAD, 1)); // a1
+                    insns.add(new InsnNode(Opcodes.IAND)); // this.bitsetN & a1
+
+                    insns.add(new VarInsnNode(Opcodes.ILOAD, 1)); // a1
+
+                    var label = new LabelNode();
+                    insns.add(new JumpInsnNode(Opcodes.IF_ICMPEQ, label)); // if (this.bitsetN & a1) == a1
+                    insns.add(new InsnNode(Opcodes.ICONST_0)); // false
+                    insns.add(new InsnNode(Opcodes.IRETURN)); // return false;
+
+                    insns.add(label);
+                    insns.add(new InsnNode(Opcodes.ICONST_1)); // true
+                    insns.add(new InsnNode(Opcodes.IRETURN)); // return true;
+
+                    meth.instructions = insns;
+                    node.methods.add(meth);
+                }
+                // unsetField
+                {
+                    var meth = new MethodNode(Opcodes.ACC_PUBLIC | Opcodes.ACC_SYNTHETIC,
+                        field + Utils.unsetFieldMethodSuffix, "()V", "()V", null);
+                    // this.bitsetN = this.bitsetN & ~(1 << x)
+                    var insns = new InsnList();
+
+                    insns.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+                    // {
+                    insns.add(new InsnNode(Opcodes.ICONST_1)); // 1
+                    insns.add(new IntInsnNode(Opcodes.BIPUSH, shift)); // x
+                    insns.add(new InsnNode(Opcodes.ISHL)); // 1 << x
+                    insns.add(new InsnNode(Opcodes.ICONST_M1));
+                    insns.add(new InsnNode(Opcodes.IXOR)); // ~(1 << x)
+
+                    insns.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+                    insns.add(new FieldInsnNode(Opcodes.GETFIELD, className, bitSetFieldName, "I")); // this.bitsetN
+                    insns.add(new InsnNode(Opcodes.IAND)); // this.bitsetN & ~(1 << x)
+                    // }
+                    insns.add(new FieldInsnNode(Opcodes.PUTFIELD, className, bitSetFieldName, "I")); // this.bitsetN = ...
+                    insns.add(new InsnNode(Opcodes.RETURN)); // return;
+
+                    meth.instructions = insns;
+                    node.methods.add(meth);
+                }
+            }
+        }
+
+        return !bitsetFields.isEmpty();
     }
 }

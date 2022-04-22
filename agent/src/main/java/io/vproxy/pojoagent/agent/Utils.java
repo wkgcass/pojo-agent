@@ -6,7 +6,9 @@ import jdk.internal.org.objectweb.asm.tree.MethodInsnNode;
 import jdk.internal.org.objectweb.asm.tree.MethodNode;
 
 public class Utils {
-    public static final String fieldIsSetSuffix = "$pojo_agent$isSet";
+    public static final String fieldIsSetBitSetPrefix = "bitSet$pojo_agent$isSet$";
+    public static final String fieldIsSetMethodSuffix = "$pojo_agent$isSet";
+    public static final String unsetFieldMethodSuffix = "$pojo_agent$unset";
     public static final String pojoAgentHelperClass = PojoAgent.class.getName().replace('.', '/');
     public static final String fieldIsSetMethodName = "fieldIsSet";
     public static final String unsetFieldMethodName = "unsetField";

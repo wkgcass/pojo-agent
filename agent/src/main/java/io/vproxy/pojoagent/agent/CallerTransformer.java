@@ -2,7 +2,10 @@ package io.vproxy.pojoagent.agent;
 
 import io.vproxy.pojoagent.api.PojoCaller;
 import jdk.internal.org.objectweb.asm.Opcodes;
-import jdk.internal.org.objectweb.asm.tree.*;
+import jdk.internal.org.objectweb.asm.tree.ClassNode;
+import jdk.internal.org.objectweb.asm.tree.InsnNode;
+import jdk.internal.org.objectweb.asm.tree.MethodInsnNode;
+import jdk.internal.org.objectweb.asm.tree.MethodNode;
 
 import java.lang.instrument.IllegalClassFormatException;
 
@@ -64,14 +67,15 @@ public class CallerTransformer extends AbstractTransformer {
             if (!Utils.isGetterInvocation(prevMethInsn))
                 continue;
 
-            var fieldName = Utils.fieldName(prevMethInsn.name) + Utils.fieldIsSetSuffix;
             if (Utils.isFieldIsSetMethodInvocation(methInsn)) {
-                meth.instructions.set(insns[i - 1], new FieldInsnNode(Opcodes.GETFIELD, prevMethInsn.owner, fieldName, "Z"));
+                var methodName = Utils.fieldName(prevMethInsn.name) + Utils.fieldIsSetMethodSuffix;
+                meth.instructions.set(insns[i - 1], new MethodInsnNode(Opcodes.INVOKEVIRTUAL, prevMethInsn.owner, methodName, "()Z"));
                 meth.instructions.set(insns[i], new InsnNode(Opcodes.NOP));
                 fieldIsSetTransformed = true;
             } else /* isUnsetFieldMethodInvocation */ {
-                meth.instructions.set(insns[i - 1], new InsnNode(Opcodes.ICONST_0)); // false
-                meth.instructions.set(insns[i], new FieldInsnNode(Opcodes.PUTFIELD, prevMethInsn.owner, fieldName, "Z")); // field = false
+                var methodName = Utils.fieldName(prevMethInsn.name) + Utils.unsetFieldMethodSuffix;
+                meth.instructions.set(insns[i - 1], new MethodInsnNode(Opcodes.INVOKEVIRTUAL, prevMethInsn.owner, methodName, "()V"));
+                meth.instructions.set(insns[i], new InsnNode(Opcodes.NOP));
                 unsetFieldTransformed = true;
             }
         }
