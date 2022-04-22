@@ -2,8 +2,7 @@ package io.vproxy.pojoagent.agent;
 
 import io.vproxy.pojoagent.api.PojoAgent;
 import jdk.internal.org.objectweb.asm.Opcodes;
-import jdk.internal.org.objectweb.asm.tree.MethodInsnNode;
-import jdk.internal.org.objectweb.asm.tree.MethodNode;
+import jdk.internal.org.objectweb.asm.tree.*;
 
 public class Utils {
     public static final String fieldIsSetBitSetPrefix = "bitSet$pojo_agent$isSet$";
@@ -18,6 +17,14 @@ public class Utils {
 
     public static boolean isStatic(int access) {
         return (access & Opcodes.ACC_STATIC) == Opcodes.ACC_STATIC;
+    }
+
+    public static boolean isPublic(int access) {
+        return (access & Opcodes.ACC_PUBLIC) == Opcodes.ACC_PUBLIC;
+    }
+
+    public static boolean isPrivate(int access) {
+        return (access & Opcodes.ACC_PRIVATE) == Opcodes.ACC_PRIVATE;
     }
 
     public static int parametersSize(String desc) {
@@ -99,5 +106,37 @@ public class Utils {
 
     public static void log(Throwable t) {
         t.printStackTrace();
+    }
+
+    public static FieldNode findField(ClassNode node, String fieldName) {
+        if (node.fields == null) {
+            return null;
+        }
+        for (var f : node.fields) {
+            if (f.name.equals(fieldName)) return f;
+        }
+        return null;
+    }
+
+    public static MethodNode findGetter(ClassNode node, String fieldName) {
+        if (node.methods == null) {
+            return null;
+        }
+        fieldName = fieldName.substring(0, 1).toLowerCase() + fieldName.substring(1);
+        for (var m : node.methods) {
+            if (m.desc.startsWith("()")) {
+                if (m.name.equals("is" + fieldName)) return m;
+            } else {
+                if (m.name.equals("get" + fieldName)) return m;
+            }
+        }
+        return null;
+    }
+
+    public static void invokeSingleParamSameDescMethod(String className, InsnList insns, MethodNode post) {
+        insns.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+        insns.add(new VarInsnNode(Opcodes.ALOAD, 1)); // another
+        int invokeOp = Utils.isPrivate(post.access) ? Opcodes.INVOKESPECIAL : Opcodes.INVOKEVIRTUAL;
+        insns.add(new MethodInsnNode(invokeOp, className, post.name, post.desc));
     }
 }

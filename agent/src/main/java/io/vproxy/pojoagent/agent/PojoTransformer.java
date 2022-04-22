@@ -1,14 +1,17 @@
 package io.vproxy.pojoagent.agent;
 
 import io.vproxy.pojoagent.api.Pojo;
+import io.vproxy.pojoagent.api.PojoAutoImpl;
 import jdk.internal.org.objectweb.asm.Opcodes;
 import jdk.internal.org.objectweb.asm.tree.*;
 
 import java.lang.instrument.IllegalClassFormatException;
 import java.util.ArrayList;
 
+@SuppressWarnings("RedundantThrows")
 public class PojoTransformer extends AbstractTransformer {
     private static final String pojoAnnotationDesc = "L" + Pojo.class.getName().replace('.', '/') + ";";
+    private static final String pojoAutoImplAnnotationDesc = "L" + PojoAutoImpl.class.getName().replace('.', '/') + ";";
 
     @Override
     protected boolean transform(ClassNode node) throws IllegalClassFormatException {
@@ -27,13 +30,15 @@ public class PojoTransformer extends AbstractTransformer {
             return false;
         }
 
-        return enhance(node);
+        var bitsetFields = new ArrayList<ArrayList<String>>();
+        return enhanceSetters(node, bitsetFields) | enhanceAutoImpl(node, bitsetFields);
     }
 
-    @SuppressWarnings("RedundantThrows")
-    private boolean enhance(ClassNode node) throws IllegalClassFormatException {
+    private boolean enhanceSetters(ClassNode node, ArrayList<ArrayList<String>> bitsetFields) throws IllegalClassFormatException {
         var className = node.name;
-        var bitsetFields = new ArrayList<ArrayList<String>>();
+        if (node.methods == null) {
+            return false;
+        }
         for (var meth : node.methods) {
             if (!Utils.isSetter(meth)) {
                 continue;
@@ -139,5 +144,99 @@ public class PojoTransformer extends AbstractTransformer {
         }
 
         return !bitsetFields.isEmpty();
+    }
+
+    private boolean enhanceAutoImpl(ClassNode node, ArrayList<ArrayList<String>> bitsetFields) throws IllegalClassFormatException {
+        var className = node.name;
+        if (node.methods == null) {
+            return false;
+        }
+        for (var meth : node.methods) {
+            if (meth.visibleAnnotations == null) {
+                continue;
+            }
+            boolean exists = false;
+            for (var anno : meth.visibleAnnotations) {
+                if (anno.desc == null) {
+                    continue;
+                }
+                if (anno.desc.equals(pojoAutoImplAnnotationDesc)) {
+                    exists = true;
+                    break;
+                }
+            }
+            if (!exists) {
+                continue;
+            }
+            if (!Utils.isStatic(meth.access) && Utils.isPublic(meth.access)
+                && meth.name.equals("updateFrom")
+                && meth.desc.equals("(L" + className + ";)V")) {
+                enhanceUpdateFrom(node, meth, bitsetFields);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void enhanceUpdateFrom(ClassNode node, MethodNode meth, ArrayList<ArrayList<String>> bitsetFields) {
+        var className = node.name;
+        var insns = new InsnList();
+
+        // find and invoke pre method
+        for (var pre : node.methods) {
+            if (pre.name.equals("preUpdateFrom") && pre.desc.equals(meth.desc)) {
+                Utils.log("preUpdateFrom found for " + className);
+                Utils.invokeSingleParamSameDescMethod(className, insns, pre);
+            }
+        }
+
+        // set fields
+        for (ArrayList<String> fields : bitsetFields) {
+            for (String fieldName : fields) {
+                var field = Utils.findField(node, fieldName);
+                var getter = Utils.findGetter(node, fieldName);
+                if (field == null && getter == null) {
+                    continue;
+                }
+                insns.add(new VarInsnNode(Opcodes.ALOAD, 1)); // another
+                insns.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, className, fieldName + Utils.fieldIsSetMethodSuffix, "()Z")); // another.xxIsSet
+                insns.add(new InsnNode(Opcodes.ICONST_0)); // false
+                var label = new LabelNode();
+                insns.add(new JumpInsnNode(Opcodes.IF_ICMPEQ, label));
+                // : if (another.xxIsSet != false) {
+                insns.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+                // {
+                String setterDesc;
+                if (field != null) {
+                    insns.add(new VarInsnNode(Opcodes.ALOAD, 1)); // another
+                    insns.add(new FieldInsnNode(Opcodes.GETFIELD, className, field.name, field.desc)); // another.xx
+                    setterDesc = "(" + field.desc + ")V";
+                } else {
+                    // assert getter != null;
+                    insns.add(new VarInsnNode(Opcodes.ALOAD, 1)); // another
+                    insns.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, className, getter.name, getter.desc)); // another.getXx()
+                    setterDesc = "(" + getter.desc.substring(2) + ")V";
+                }
+                // }
+                insns.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, className,
+                    "set" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1),
+                    setterDesc)); // this.setXx(...);
+                // }
+                insns.add(label);
+            }
+        }
+
+        // find and invoke pre method
+        for (var post : node.methods) {
+            if (post.name.equals("postUpdateFrom") && post.desc.equals(meth.desc)) {
+                Utils.log("postUpdateFrom found for " + className);
+                Utils.invokeSingleParamSameDescMethod(className, insns, post);
+                break;
+            }
+        }
+
+        insns.add(new InsnNode(Opcodes.RETURN));
+        Utils.log("method enhanced: " + className + "." + meth.name + meth.desc);
+        meth.instructions = insns;
     }
 }
