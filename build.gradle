@@ -119,10 +119,12 @@ project(':sample') {
 
     task sample(type: JavaExec) {
         jvmArgs "-javaagent:${rootProject.buildDir.getAbsolutePath()}${File.separator}libs${File.separator}pojo-agent.jar"
+if (!JavaVersion.current().toString().startsWith('1.')) {
         jvmArgs "--add-opens"
         jvmArgs "java.base/jdk.internal.org.objectweb.asm=ALL-UNNAMED"
         jvmArgs "--add-opens"
         jvmArgs "java.base/jdk.internal.org.objectweb.asm.tree=ALL-UNNAMED"
+}
         classpath = sourceSets.main.runtimeClasspath
         mainClass = 'my.test.Main'
 
@@ -131,10 +133,12 @@ project(':sample') {
 
     task ktsample(type: JavaExec) {
         jvmArgs "-javaagent:${rootProject.buildDir.getAbsolutePath()}${File.separator}libs${File.separator}pojo-agent.jar"
+if (!JavaVersion.current().toString().startsWith('1.')) {
         jvmArgs "--add-opens"
         jvmArgs "java.base/jdk.internal.org.objectweb.asm=ALL-UNNAMED"
         jvmArgs "--add-opens"
         jvmArgs "java.base/jdk.internal.org.objectweb.asm.tree=ALL-UNNAMED"
+}
         classpath = sourceSets.main.runtimeClasspath
         mainClass = 'my.test.kt.Main'
 
@@ -161,10 +165,12 @@ project(':test') {
         include '**/Suite1.class'
 
         jvmArgs "-javaagent:${rootProject.buildDir.getAbsolutePath()}${File.separator}libs${File.separator}pojo-agent.jar"
+if (!JavaVersion.current().toString().startsWith('1.')) {
         jvmArgs "--add-opens"
         jvmArgs "java.base/jdk.internal.org.objectweb.asm=ALL-UNNAMED"
         jvmArgs "--add-opens"
         jvmArgs "java.base/jdk.internal.org.objectweb.asm.tree=ALL-UNNAMED"
+}
 
         dependsOn(rootProject.jar)
     }
