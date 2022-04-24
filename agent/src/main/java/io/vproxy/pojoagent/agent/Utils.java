@@ -55,6 +55,7 @@ public class Utils {
                 } else if (c == 'L') {
                     state = 1;
                 } else {
+                    cnt += 1;
                     state = 0;
                 }
             }
