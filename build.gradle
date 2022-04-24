@@ -1,3 +1,5 @@
+import org.gradle.api.tasks.testing.logging.TestLogEvent
+
 plugins {
     id 'java-library'
     id 'org.jetbrains.kotlin.jvm' version '1.5.31'
@@ -135,6 +137,34 @@ project(':sample') {
         jvmArgs "java.base/jdk.internal.org.objectweb.asm.tree=ALL-UNNAMED"
         classpath = sourceSets.main.runtimeClasspath
         mainClass = 'my.test.kt.Main'
+
+        dependsOn(rootProject.jar)
+    }
+}
+
+project(':test') {
+    dependencies {
+        testImplementation group: 'junit', name: 'junit', version: '4.13.2'
+        implementation project(":api")
+    }
+
+    task suite(type: Test) {
+        testLogging {
+            events TestLogEvent.FAILED, TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.STARTED
+            maxGranularity 100
+            exceptionFormat "full"
+            showCauses true
+            showExceptions true
+            showStackTraces true
+        }
+
+        include '**/Suite1.class'
+
+        jvmArgs "-javaagent:${rootProject.buildDir.getAbsolutePath()}${File.separator}libs${File.separator}pojo-agent.jar"
+        jvmArgs "--add-opens"
+        jvmArgs "java.base/jdk.internal.org.objectweb.asm=ALL-UNNAMED"
+        jvmArgs "--add-opens"
+        jvmArgs "java.base/jdk.internal.org.objectweb.asm.tree=ALL-UNNAMED"
 
         dependsOn(rootProject.jar)
     }

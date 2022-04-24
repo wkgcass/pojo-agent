@@ -3,4 +3,5 @@ include 'api'
 include 'agent'
 include 'all'
 include 'sample'
+include 'test'
 

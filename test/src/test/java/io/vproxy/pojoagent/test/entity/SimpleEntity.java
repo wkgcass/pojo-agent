@@ -1,0 +1,326 @@
+package io.vproxy.pojoagent.test.entity;
+
+import io.vproxy.pojoagent.api.*;
+import io.vproxy.pojoagent.api.template.PojoUpdateFrom;
+
+import java.util.Arrays;
+import java.util.BitSet;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+@Pojo
+public class SimpleEntity implements Entity, PojoUpdateFrom<SimpleEntity> {
+    private String a;
+    private int i;
+    private long l;
+    private double d;
+    private float f;
+    private char c;
+    private boolean z;
+    private short s;
+    private byte b;
+    private String[] aa;
+    private int[] ai;
+    private String[][] aaa;
+    private int[][] aii;
+
+    public String getA() {
+        return a;
+    }
+
+    public void setA(String a) {
+        this.a = a;
+    }
+
+    public int getI() {
+        return i;
+    }
+
+    public void setI(int i) {
+        this.i = i;
+    }
+
+    public long getL() {
+        return l;
+    }
+
+    public void setL(long l) {
+        this.l = l;
+    }
+
+    public double getD() {
+        return d;
+    }
+
+    public void setD(double d) {
+        this.d = d;
+    }
+
+    public float getF() {
+        return f;
+    }
+
+    public void setF(float f) {
+        this.f = f;
+    }
+
+    public char getC() {
+        return c;
+    }
+
+    public void setC(char c) {
+        this.c = c;
+    }
+
+    public boolean isZ() {
+        return z;
+    }
+
+    public void setZ(boolean z) {
+        this.z = z;
+    }
+
+    public short getS() {
+        return s;
+    }
+
+    public void setS(short s) {
+        this.s = s;
+    }
+
+    public byte getB() {
+        return b;
+    }
+
+    public void setB(byte b) {
+        this.b = b;
+    }
+
+    public String[] getAa() {
+        return aa;
+    }
+
+    public void setAa(String[] aa) {
+        this.aa = aa;
+    }
+
+    public int[] getAi() {
+        return ai;
+    }
+
+    public void setAi(int[] ai) {
+        this.ai = ai;
+    }
+
+    public String[][] getAaa() {
+        return aaa;
+    }
+
+    public void setAaa(String[][] aaa) {
+        this.aaa = aaa;
+    }
+
+    public int[][] getAii() {
+        return aii;
+    }
+
+    public void setAii(int[][] aii) {
+        this.aii = aii;
+    }
+
+    @Override
+    public String toString() {
+        return "SimpleEntity{" +
+            "a='" + a + '\'' +
+            ", i=" + i +
+            ", l=" + l +
+            ", d=" + d +
+            ", f=" + f +
+            ", c=" + c +
+            ", z=" + z +
+            ", s=" + s +
+            ", b=" + b +
+            ", aa=" + Arrays.toString(aa) +
+            ", ai=" + Arrays.toString(ai) +
+            ", aaa=" + Arrays.toString(aaa) +
+            ", aii=" + Arrays.toString(aii) +
+            '}';
+    }
+
+    @Override
+    public void doSet(BitSet bitset) {
+        if (bitset.get(0)) {
+            this.setA(null);
+        }
+        if (bitset.get(1)) {
+            this.setI(0);
+        }
+        if (bitset.get(2)) {
+            this.setL(0L);
+        }
+        if (bitset.get(3)) {
+            this.setD(0.0);
+        }
+        if (bitset.get(4)) {
+            this.setF(0f);
+        }
+        if (bitset.get(5)) {
+            this.setC((char) 0);
+        }
+        if (bitset.get(6)) {
+            this.setZ(false);
+        }
+        if (bitset.get(7)) {
+            this.setS((short) 0);
+        }
+        if (bitset.get(8)) {
+            this.setB((byte) 0);
+        }
+        if (bitset.get(9)) {
+            this.setAa(null);
+        }
+        if (bitset.get(10)) {
+            this.setAi(null);
+        }
+        if (bitset.get(11)) {
+            this.setAaa(null);
+        }
+        if (bitset.get(12)) {
+            this.setAii(null);
+        }
+    }
+
+    @PojoCaller
+    @Override
+    public void doUnset(BitSet bitset) {
+        if (bitset.get(0)) {
+            PojoAgent.unsetField(this.getA());
+        }
+        if (bitset.get(1)) {
+            PojoAgent.unsetField(this.getI());
+        }
+        if (bitset.get(2)) {
+            PojoAgent.unsetField(this.getL());
+        }
+        if (bitset.get(3)) {
+            PojoAgent.unsetField(this.getD());
+        }
+        if (bitset.get(4)) {
+            PojoAgent.unsetField(this.getF());
+        }
+        if (bitset.get(5)) {
+            PojoAgent.unsetField(this.getC());
+        }
+        if (bitset.get(6)) {
+            PojoAgent.unsetField(this.isZ());
+        }
+        if (bitset.get(7)) {
+            PojoAgent.unsetField(this.getS());
+        }
+        if (bitset.get(8)) {
+            PojoAgent.unsetField(this.getB());
+        }
+        if (bitset.get(9)) {
+            PojoAgent.unsetField(this.getAa());
+        }
+        if (bitset.get(10)) {
+            PojoAgent.unsetField(this.getAi());
+        }
+        if (bitset.get(11)) {
+            PojoAgent.unsetField(this.getAaa());
+        }
+        if (bitset.get(12)) {
+            PojoAgent.unsetField(this.getAii());
+        }
+    }
+
+    @PojoCaller
+    @Override
+    public void doAssert(BitSet bitset) {
+        if (bitset.get(0)) {
+            assertTrue(PojoAgent.fieldIsSet(this.getA()));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.getA()));
+        }
+        if (bitset.get(1)) {
+            assertTrue(PojoAgent.fieldIsSet(this.getI()));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.getI()));
+        }
+        if (bitset.get(2)) {
+            assertTrue(PojoAgent.fieldIsSet(this.getL()));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.getL()));
+        }
+        if (bitset.get(3)) {
+            assertTrue(PojoAgent.fieldIsSet(this.getD()));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.getD()));
+        }
+        if (bitset.get(4)) {
+            assertTrue(PojoAgent.fieldIsSet(this.getF()));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.getF()));
+        }
+        if (bitset.get(5)) {
+            assertTrue(PojoAgent.fieldIsSet(this.getC()));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.getC()));
+        }
+        if (bitset.get(6)) {
+            assertTrue(PojoAgent.fieldIsSet(this.isZ()));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.isZ()));
+        }
+        if (bitset.get(7)) {
+            assertTrue(PojoAgent.fieldIsSet(this.getS()));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.getS()));
+        }
+        if (bitset.get(8)) {
+            assertTrue(PojoAgent.fieldIsSet(this.getB()));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.getB()));
+        }
+        if (bitset.get(9)) {
+            assertTrue(PojoAgent.fieldIsSet(this.getAa()));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.getAa()));
+        }
+        if (bitset.get(10)) {
+            assertTrue(PojoAgent.fieldIsSet(this.getAi()));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.getAi()));
+        }
+        if (bitset.get(11)) {
+            assertTrue(PojoAgent.fieldIsSet(this.getAaa()));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.getAaa()));
+        }
+        if (bitset.get(12)) {
+            assertTrue(PojoAgent.fieldIsSet(this.getAii()));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.getAii()));
+        }
+    }
+
+    public boolean preUpdateFromCalled = false;
+    public boolean postUpdateFromCalled = false;
+
+    @PojoAutoImpl
+    @Override
+    public void updateFrom(SimpleEntity another) {
+        throw new RequirePojoAgentException();
+    }
+
+    @Override
+    public void preUpdateFrom(SimpleEntity another) {
+        preUpdateFromCalled = true;
+    }
+
+    @Override
+    public void postUpdateFrom(SimpleEntity another) {
+        postUpdateFromCalled = true;
+    }
+}
