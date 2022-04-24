@@ -12,7 +12,7 @@ public class Main {
 
         ObjectMapper om = new ObjectMapper();
 
-        var bean = new Bean();
+        Bean bean = new Bean();
         System.out.println("new bean: id is set?    " + PojoAgent.fieldIsSet(bean.getId()));
         System.out.println("new bean: name is set?  " + PojoAgent.fieldIsSet(bean.getName()));
         System.out.println("new bean: admin is set? " + PojoAgent.fieldIsSet(bean.isAdmin()));
