@@ -1,13 +1,3 @@
-compileJava {
-    doFirst {
-        options.compilerArgs << '--module-path' << classpath.asPath
-    }
-    options.compilerArgs << '--add-modules' << [
-            'io.vproxy.pojoagent.api',
-            'io.vproxy.pojoagent.agent',
-    ].join(',')
-}
-
 jar {
     archiveName "pojo-agent-all.jar"
 }

@@ -20,7 +20,7 @@ public class PojoTransformer extends AbstractTransformer {
         }
 
         boolean shouldHandle = false;
-        for (var anno : node.visibleAnnotations) {
+        for (AnnotationNode anno : node.visibleAnnotations) {
             if (anno.desc.equals(pojoAnnotationDesc)) {
                 shouldHandle = true;
                 break;
@@ -30,16 +30,16 @@ public class PojoTransformer extends AbstractTransformer {
             return false;
         }
 
-        var bitsetFields = new ArrayList<ArrayList<String>>();
+        ArrayList<ArrayList<String>> bitsetFields = new ArrayList<>();
         return enhanceSetters(node, bitsetFields) | enhanceAutoImpl(node, bitsetFields);
     }
 
     private boolean enhanceSetters(ClassNode node, ArrayList<ArrayList<String>> bitsetFields) throws IllegalClassFormatException {
-        var className = node.name;
+        String className = node.name;
         if (node.methods == null) {
             return false;
         }
-        for (var meth : node.methods) {
+        for (MethodNode meth : node.methods) {
             if (!Utils.isSetter(meth)) {
                 continue;
             }
@@ -81,15 +81,15 @@ public class PojoTransformer extends AbstractTransformer {
         }
         for (int i = 0; i < bitsetFields.size(); ++i) {
             String bitSetFieldName = Utils.fieldIsSetBitSetPrefix + (i + 1);
-            var fields = bitsetFields.get(i);
+            ArrayList<String> fields = bitsetFields.get(i);
             for (int shift = 0; shift < fields.size(); ++shift) {
-                var field = fields.get(shift);
+                String field = fields.get(shift);
                 // fieldIsSet
                 {
-                    var meth = new MethodNode(Opcodes.ACC_PUBLIC | Opcodes.ACC_SYNTHETIC,
+                    MethodNode meth = new MethodNode(Opcodes.ACC_PUBLIC | Opcodes.ACC_SYNTHETIC,
                         field + Utils.fieldIsSetMethodSuffix, "()Z", "()Z", null);
                     // return (this.bitsetN | (1 << x)) == (1 << x)
-                    var insns = new InsnList();
+                    InsnList insns = new InsnList();
 
                     insns.add(new InsnNode(Opcodes.ICONST_1)); // 1
                     insns.add(new IntInsnNode(Opcodes.BIPUSH, shift)); // x
@@ -103,7 +103,7 @@ public class PojoTransformer extends AbstractTransformer {
 
                     insns.add(new VarInsnNode(Opcodes.ILOAD, 1)); // a1
 
-                    var label = new LabelNode();
+                    LabelNode label = new LabelNode();
                     insns.add(new JumpInsnNode(Opcodes.IF_ICMPEQ, label)); // if (this.bitsetN & a1) == a1
                     insns.add(new InsnNode(Opcodes.ICONST_0)); // false
                     insns.add(new InsnNode(Opcodes.IRETURN)); // return false;
@@ -117,10 +117,10 @@ public class PojoTransformer extends AbstractTransformer {
                 }
                 // unsetField
                 {
-                    var meth = new MethodNode(Opcodes.ACC_PUBLIC | Opcodes.ACC_SYNTHETIC,
+                    MethodNode meth = new MethodNode(Opcodes.ACC_PUBLIC | Opcodes.ACC_SYNTHETIC,
                         field + Utils.unsetFieldMethodSuffix, "()V", "()V", null);
                     // this.bitsetN = this.bitsetN & ~(1 << x)
-                    var insns = new InsnList();
+                    InsnList insns = new InsnList();
 
                     insns.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
                     // {
@@ -147,16 +147,16 @@ public class PojoTransformer extends AbstractTransformer {
     }
 
     private boolean enhanceAutoImpl(ClassNode node, ArrayList<ArrayList<String>> bitsetFields) throws IllegalClassFormatException {
-        var className = node.name;
+        String className = node.name;
         if (node.methods == null) {
             return false;
         }
-        for (var meth : node.methods) {
+        for (MethodNode meth : node.methods) {
             if (meth.visibleAnnotations == null) {
                 continue;
             }
             boolean exists = false;
-            for (var anno : meth.visibleAnnotations) {
+            for (AnnotationNode anno : meth.visibleAnnotations) {
                 if (anno.desc == null) {
                     continue;
                 }
@@ -179,11 +179,11 @@ public class PojoTransformer extends AbstractTransformer {
     }
 
     private void enhanceUpdateFrom(ClassNode node, MethodNode meth, ArrayList<ArrayList<String>> bitsetFields) {
-        var className = node.name;
-        var insns = new InsnList();
+        String className = node.name;
+        InsnList insns = new InsnList();
 
         // find and invoke pre method
-        for (var pre : node.methods) {
+        for (MethodNode pre : node.methods) {
             if (pre.name.equals("preUpdateFrom") && pre.desc.equals(meth.desc)) {
                 Utils.log("preUpdateFrom found for " + className);
                 Utils.invokeSingleParamSameDescMethod(className, insns, pre);
@@ -193,15 +193,15 @@ public class PojoTransformer extends AbstractTransformer {
         // set fields
         for (ArrayList<String> fields : bitsetFields) {
             for (String fieldName : fields) {
-                var field = Utils.findField(node, fieldName);
-                var getter = Utils.findGetter(node, fieldName);
+                FieldNode field = Utils.findField(node, fieldName);
+                MethodNode getter = Utils.findGetter(node, fieldName);
                 if (field == null && getter == null) {
                     continue;
                 }
                 insns.add(new VarInsnNode(Opcodes.ALOAD, 1)); // another
                 insns.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, className, fieldName + Utils.fieldIsSetMethodSuffix, "()Z")); // another.xxIsSet
                 insns.add(new InsnNode(Opcodes.ICONST_0)); // false
-                var label = new LabelNode();
+                LabelNode label = new LabelNode();
                 insns.add(new JumpInsnNode(Opcodes.IF_ICMPEQ, label));
                 // : if (another.xxIsSet != false) {
                 insns.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
@@ -227,7 +227,7 @@ public class PojoTransformer extends AbstractTransformer {
         }
 
         // find and invoke pre method
-        for (var post : node.methods) {
+        for (MethodNode post : node.methods) {
             if (post.name.equals("postUpdateFrom") && post.desc.equals(meth.desc)) {
                 Utils.log("postUpdateFrom found for " + className);
                 Utils.invokeSingleParamSameDescMethod(className, insns, post);

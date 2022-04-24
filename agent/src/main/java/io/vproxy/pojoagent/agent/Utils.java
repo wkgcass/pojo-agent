@@ -28,7 +28,7 @@ public class Utils {
     }
 
     public static int parametersSize(String desc) {
-        var chars = desc.toCharArray();
+        char[] chars = desc.toCharArray();
         int cnt = 0;
         int state = 0; // 0: init, 1: met 'L', 2: array
         for (int i = 1; i < chars.length; i++) {
@@ -112,7 +112,7 @@ public class Utils {
         if (node.fields == null) {
             return null;
         }
-        for (var f : node.fields) {
+        for (FieldNode f : node.fields) {
             if (f.name.equals(fieldName)) return f;
         }
         return null;
@@ -123,7 +123,7 @@ public class Utils {
             return null;
         }
         fieldName = fieldName.substring(0, 1).toLowerCase() + fieldName.substring(1);
-        for (var m : node.methods) {
+        for (MethodNode m : node.methods) {
             if (m.desc.startsWith("()")) {
                 if (m.name.equals("is" + fieldName)) return m;
             } else {

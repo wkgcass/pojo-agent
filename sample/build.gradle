@@ -1,11 +1,5 @@
-compileJava {
-    doFirst {
-        options.compilerArgs << '--module-path' << classpath.asPath
-    }
-    options.compilerArgs << '--add-modules' << [
-            'io.vproxy.pojoagent.api',
-    ].join(',')
-}
+sourceCompatibility = 11.0
+targetCompatibility = 11.0
 
 jar {
     archiveName "pojo-agent-example.jar"

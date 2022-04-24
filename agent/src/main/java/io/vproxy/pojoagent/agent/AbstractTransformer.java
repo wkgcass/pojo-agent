@@ -11,11 +11,6 @@ import java.util.Arrays;
 
 @SuppressWarnings("PointlessBitwiseExpression")
 public abstract class AbstractTransformer implements ClassFileTransformer {
-    @Override
-    public final byte[] transform(Module module, ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
-        return transform(loader, className, classBeingRedefined, protectionDomain, classfileBuffer);
-    }
-
     private static final int ASM4 = 4 << 16 | 0 << 8;
     private static final int ASM5 = 5 << 16 | 0 << 8;
     private static final int ASM6 = 6 << 16 | 0 << 8;
@@ -31,9 +26,9 @@ public abstract class AbstractTransformer implements ClassFileTransformer {
         if (ASM_VER != 0) {
             return new ClassNode(ASM_VER);
         }
-        for (var asm : ASMs) {
+        for (int asm : ASMs) {
             try {
-                var node = new ClassNode(asm);
+                ClassNode node = new ClassNode(asm);
                 ASM_VER = asm;
                 return node;
             } catch (Throwable ignore) {
@@ -44,10 +39,10 @@ public abstract class AbstractTransformer implements ClassFileTransformer {
     }
 
     @Override
-    public final byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
+    public final byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) {
         ClassNode node;
         try {
-            var reader = new ClassReader(classfileBuffer);
+            ClassReader reader = new ClassReader(classfileBuffer);
             node = newClassNode();
             reader.accept(node, 0);
         } catch (Throwable t) {
@@ -72,7 +67,7 @@ public abstract class AbstractTransformer implements ClassFileTransformer {
             return classfileBuffer;
         }
         if (transformed) {
-            var writer = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
+            ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
             node.accept(writer);
             return writer.toByteArray();
         } else {
