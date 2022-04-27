@@ -1,8 +1,6 @@
 package io.vproxy.pojoagent.test.entity;
 
-import io.vproxy.pojoagent.api.Pojo;
-import io.vproxy.pojoagent.api.PojoAgent;
-import io.vproxy.pojoagent.api.PojoCaller;
+import io.vproxy.pojoagent.api.*;
 
 import java.util.BitSet;
 
@@ -1500,5 +1498,37 @@ public class BigEntity implements Entity {
         } else {
             assertFalse(PojoAgent.fieldIsSet(this.getF69()));
         }
+    }
+
+    public BigEntity preUpdateFromCalled = null;
+    public BigEntity postUpdateFromCalled = null;
+    public Integer preValidateCalled = null;
+    public ValidationResult postValidateCalled = null;
+
+    @PojoAutoImpl
+    public void updateFrom(BigEntity another) {
+        throw new RequirePojoAutoImplException();
+    }
+
+    private void preUpdateFrom(BigEntity another) {
+        preUpdateFromCalled = another;
+    }
+
+    private void postUpdateFrom(BigEntity another) {
+        postUpdateFromCalled = another;
+    }
+
+    @PojoAutoImpl
+    public ValidationResult validate(int action) {
+        throw new RequirePojoAutoImplException();
+    }
+
+    private void preValidate(int action) {
+        preValidateCalled = action;
+    }
+
+    private ValidationResult postValidate(ValidationResult result) {
+        postValidateCalled = result;
+        return result;
     }
 }

@@ -2,6 +2,7 @@ package io.vproxy.pojoagent.test.entity;
 
 import io.vproxy.pojoagent.api.*;
 import io.vproxy.pojoagent.api.template.PojoUpdateFrom;
+import io.vproxy.pojoagent.api.template.PojoValidate;
 
 import java.util.Arrays;
 import java.util.BitSet;
@@ -10,19 +11,32 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @Pojo
-public class SimpleEntity implements Entity, PojoUpdateFrom<SimpleEntity> {
+public class SimpleEntity implements Entity, PojoUpdateFrom<SimpleEntity>, PojoValidate {
+    @MustExist(1)
+    @MustNotExist(2)
+    @MustNotNull(4)
     private String a;
+    @MustExist(1)
+    @MustNotExist(2)
     private int i;
+    @MustExist(1)
+    @MustNotExist(2)
     private long l;
+    @MustExist(1)
+    @MustNotExist(2)
     private double d;
     private float f;
     private char c;
     private boolean z;
     private short s;
     private byte b;
+    @MustNotNull(4)
     private String[] aa;
+    @MustNotNull(4)
     private int[] ai;
+    @MustNotNull(4)
     private String[][] aaa;
+    @MustNotNull(4)
     private int[][] aii;
 
     public String getA() {
@@ -305,22 +319,41 @@ public class SimpleEntity implements Entity, PojoUpdateFrom<SimpleEntity> {
         }
     }
 
-    public boolean preUpdateFromCalled = false;
-    public boolean postUpdateFromCalled = false;
+    public SimpleEntity preUpdateFromCalled = null;
+    public SimpleEntity postUpdateFromCalled = null;
+    public Integer preValidateCalled = null;
+    public ValidationResult postValidateCalled = null;
 
     @PojoAutoImpl
     @Override
     public void updateFrom(SimpleEntity another) {
-        throw new RequirePojoAgentException();
+        throw new RequirePojoAutoImplException();
     }
 
     @Override
     public void preUpdateFrom(SimpleEntity another) {
-        preUpdateFromCalled = true;
+        preUpdateFromCalled = another;
     }
 
     @Override
     public void postUpdateFrom(SimpleEntity another) {
-        postUpdateFromCalled = true;
+        postUpdateFromCalled = another;
+    }
+
+    @PojoAutoImpl
+    @Override
+    public ValidationResult validate(int action) {
+        throw new RequirePojoAutoImplException();
+    }
+
+    @Override
+    public void preValidate(int action) {
+        preValidateCalled = action;
+    }
+
+    @Override
+    public ValidationResult postValidate(ValidationResult result) {
+        postValidateCalled = result;
+        return result;
     }
 }

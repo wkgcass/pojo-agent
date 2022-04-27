@@ -101,6 +101,10 @@ public class Utils {
         return methInsn.owner.equals(pojoAgentHelperClass) && methInsn.name.equals(unsetFieldMethodName);
     }
 
+    public static void warn(String msg) {
+        log("WARN: " + msg);
+    }
+
     public static void log(String msg) {
         System.err.println("pojo-agent: " + msg);
     }
@@ -134,10 +138,16 @@ public class Utils {
         return null;
     }
 
-    public static void invokeSingleParamSameDescMethod(String className, InsnList insns, MethodNode post) {
+    public static void invokeSingleSameParamMethod(String className, InsnList insns, MethodNode meth) {
         insns.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
-        insns.add(new VarInsnNode(Opcodes.ALOAD, 1)); // another
-        int invokeOp = Utils.isPrivate(post.access) ? Opcodes.INVOKESPECIAL : Opcodes.INVOKEVIRTUAL;
-        insns.add(new MethodInsnNode(invokeOp, className, post.name, post.desc));
+        int opcode;
+        if (meth.desc.startsWith("(I)")) {
+            opcode = Opcodes.ILOAD;
+        } else {
+            opcode = Opcodes.ALOAD;
+        }
+        insns.add(new VarInsnNode(opcode, 1)); // another
+        int invokeOp = Utils.isPrivate(meth.access) ? Opcodes.INVOKESPECIAL : Opcodes.INVOKEVIRTUAL;
+        insns.add(new MethodInsnNode(invokeOp, className, meth.name, meth.desc));
     }
 }

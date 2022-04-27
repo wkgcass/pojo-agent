@@ -1,10 +1,10 @@
 package io.vproxy.pojoagent.test.cases;
 
+import io.vproxy.pojoagent.test.entity.BigEntity;
 import io.vproxy.pojoagent.test.entity.SimpleEntity;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
 
 public class TestUpdateFrom {
     @Test
@@ -35,5 +35,29 @@ public class TestUpdateFrom {
         assertEquals(123, b.getL());
         assertEquals(0.0, b.getD(), 0.0);
         assertEquals(3.2f, b.getF(), 0.0);
+
+        assertSame(a, b.preUpdateFromCalled);
+        assertSame(a, b.postUpdateFromCalled);
+    }
+
+    @Test
+    public void privatePrePost() {
+        BigEntity a = new BigEntity();
+        a.setF0("f0");
+        a.setF1("f1");
+
+        BigEntity b = new BigEntity();
+        b.setF0("xx");
+        b.setF1("yy");
+        b.setF2("zz");
+
+        b.updateFrom(a);
+
+        assertEquals("f0", b.getF0());
+        assertEquals("f1", b.getF1());
+        assertEquals("zz", b.getF2());
+
+        assertSame(a, b.preUpdateFromCalled);
+        assertSame(a, b.postUpdateFromCalled);
     }
 }

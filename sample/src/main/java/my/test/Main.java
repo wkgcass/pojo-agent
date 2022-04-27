@@ -68,5 +68,7 @@ public class Main {
         System.out.println("input bean     " + newBean);
         bean.updateFrom(newBean);
         System.out.println("current bean:  " + bean);
+
+        System.out.println("bean.validate: " + bean.validate());
     }
 }

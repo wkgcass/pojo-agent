@@ -2,12 +2,15 @@ package my.test;
 
 import io.vproxy.pojoagent.api.*;
 import io.vproxy.pojoagent.api.template.PojoUpdateFrom;
+import io.vproxy.pojoagent.api.template.PojoValidate;
 
 import java.util.Arrays;
 
 @Pojo
-public class Bean implements PojoUpdateFrom<Bean> {
+public class Bean implements PojoUpdateFrom<Bean>, PojoValidate {
+    @MustNotExist
     private int id;
+    @MustExist(CommonActions.CREATE)
     private String name;
     private boolean admin;
     private String[] array;
@@ -47,7 +50,7 @@ public class Bean implements PojoUpdateFrom<Bean> {
     @PojoAutoImpl
     @Override
     public void updateFrom(Bean another) {
-        throw new RequirePojoAgentException();
+        throw new RequirePojoAutoImplException();
     }
 
     @PojoCaller
@@ -71,5 +74,22 @@ public class Bean implements PojoUpdateFrom<Bean> {
             ", admin=" + admin +
             ", array=" + Arrays.toString(array) +
             '}';
+    }
+
+    @PojoAutoImpl
+    @Override
+    public ValidationResult validate(int action) {
+        throw new RequirePojoAutoImplException();
+    }
+
+    @Override
+    public void preValidate(int action) {
+        System.out.println("pre validate is called");
+    }
+
+    @Override
+    public ValidationResult postValidate(ValidationResult result) {
+        System.out.println("post validate is called");
+        return result;
     }
 }

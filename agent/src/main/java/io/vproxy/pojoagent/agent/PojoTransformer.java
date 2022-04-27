@@ -1,7 +1,6 @@
 package io.vproxy.pojoagent.agent;
 
-import io.vproxy.pojoagent.api.Pojo;
-import io.vproxy.pojoagent.api.PojoAutoImpl;
+import io.vproxy.pojoagent.api.*;
 import jdk.internal.org.objectweb.asm.Opcodes;
 import jdk.internal.org.objectweb.asm.tree.*;
 
@@ -12,6 +11,11 @@ import java.util.ArrayList;
 public class PojoTransformer extends AbstractTransformer {
     private static final String pojoAnnotationDesc = "L" + Pojo.class.getName().replace('.', '/') + ";";
     private static final String pojoAutoImplAnnotationDesc = "L" + PojoAutoImpl.class.getName().replace('.', '/') + ";";
+    private static final String mustExistAnnotationDesc = "L" + MustExist.class.getName().replace('.', '/') + ";";
+    private static final String mustNotExistAnnotationDesc = "L" + MustNotExist.class.getName().replace('.', '/') + ";";
+    private static final String mustNotNullAnnotationDesc = "L" + MustNotNull.class.getName().replace('.', '/') + ";";
+    private static final String validationResultInternalName = ValidationResult.class.getName().replace('.', '/');
+    private static final String validationResultDesc = "L" + validationResultInternalName + ";";
 
     @Override
     protected boolean transform(ClassNode node) throws IllegalClassFormatException {
@@ -151,6 +155,7 @@ public class PojoTransformer extends AbstractTransformer {
         if (node.methods == null) {
             return false;
         }
+        boolean ret = false;
         for (MethodNode meth : node.methods) {
             if (meth.visibleAnnotations == null) {
                 continue;
@@ -172,10 +177,15 @@ public class PojoTransformer extends AbstractTransformer {
                 && meth.name.equals("updateFrom")
                 && meth.desc.equals("(L" + className + ";)V")) {
                 enhanceUpdateFrom(node, meth, bitsetFields);
-                return true;
+                ret = true;
+            } else if (!Utils.isStatic(meth.access) && Utils.isPublic(meth.access)
+                && meth.name.equals("validate")
+                && meth.desc.equals("(I)" + validationResultDesc)) {
+                enhanceValidate(node, meth);
+                ret = true;
             }
         }
-        return false;
+        return ret;
     }
 
     private void enhanceUpdateFrom(ClassNode node, MethodNode meth, ArrayList<ArrayList<String>> bitsetFields) {
@@ -186,7 +196,7 @@ public class PojoTransformer extends AbstractTransformer {
         for (MethodNode pre : node.methods) {
             if (pre.name.equals("preUpdateFrom") && pre.desc.equals(meth.desc)) {
                 Utils.log("preUpdateFrom found for " + className);
-                Utils.invokeSingleParamSameDescMethod(className, insns, pre);
+                Utils.invokeSingleSameParamMethod(className, insns, pre);
             }
         }
 
@@ -226,11 +236,11 @@ public class PojoTransformer extends AbstractTransformer {
             }
         }
 
-        // find and invoke pre method
+        // find and invoke post method
         for (MethodNode post : node.methods) {
             if (post.name.equals("postUpdateFrom") && post.desc.equals(meth.desc)) {
                 Utils.log("postUpdateFrom found for " + className);
-                Utils.invokeSingleParamSameDescMethod(className, insns, post);
+                Utils.invokeSingleSameParamMethod(className, insns, post);
                 break;
             }
         }
@@ -238,5 +248,138 @@ public class PojoTransformer extends AbstractTransformer {
         insns.add(new InsnNode(Opcodes.RETURN));
         Utils.log("method enhanced: " + className + "." + meth.name + meth.desc);
         meth.instructions = insns;
+    }
+
+    private void enhanceValidate(ClassNode node, MethodNode meth) {
+        String className = node.name;
+        InsnList insns = new InsnList();
+
+        // find and invoke pre method
+        for (MethodNode pre : node.methods) {
+            if (pre.name.equals("preValidate") && pre.desc.equals("(I)V")) {
+                Utils.log("preValidate found for " + className);
+                Utils.invokeSingleSameParamMethod(className, insns, pre);
+            }
+        }
+
+        // var result = new ValidationResult();
+        insns.add(new TypeInsnNode(Opcodes.NEW, validationResultInternalName));
+        insns.add(new InsnNode(Opcodes.DUP));
+        insns.add(new VarInsnNode(Opcodes.ILOAD, 1)); // action
+        insns.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, validationResultInternalName, "<init>", "(I)V"));
+        insns.add(new VarInsnNode(Opcodes.ASTORE, 2));
+
+        // validate fields
+        for (FieldNode field : node.fields) {
+            if (Utils.isStatic(field.access)) {
+                // will not handle static fields
+                continue;
+            }
+            if (field.visibleAnnotations == null) {
+                continue;
+            }
+            for (AnnotationNode anno : field.visibleAnnotations) {
+                if (anno.desc.equals(mustExistAnnotationDesc)) {
+                    enhanceValidateMustExist(className, field, anno, insns);
+                } else if (anno.desc.equals(mustNotExistAnnotationDesc)) {
+                    enhanceValidateMustNotExist(className, field, anno, insns);
+                } else if (anno.desc.equals(mustNotNullAnnotationDesc)) {
+                    enhanceValidateMustNotNull(className, field, anno, insns);
+                }
+            }
+        }
+
+        // find and invoke post method
+        boolean postFound = false;
+        for (MethodNode post : node.methods) {
+            if (post.name.equals("postValidate") && post.desc.equals("(" + validationResultDesc + ")" + validationResultDesc)) {
+                Utils.log("postValidate found for " + className);
+                insns.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+                insns.add(new VarInsnNode(Opcodes.ALOAD, 2)); // result
+                int invokeOp = Utils.isPrivate(meth.access) ? Opcodes.INVOKESPECIAL : Opcodes.INVOKEVIRTUAL;
+                insns.add(new MethodInsnNode(invokeOp, className, "postValidate", "(" + validationResultDesc + ")" + validationResultDesc));
+                insns.add(new InsnNode(Opcodes.ARETURN));
+                postFound = true;
+                break;
+            }
+        }
+
+        Utils.log("method enhanced: " + className + "." + meth.name + meth.desc);
+        if (!postFound) {
+            insns.add(new VarInsnNode(Opcodes.ALOAD, 2));
+            insns.add(new InsnNode(Opcodes.ARETURN));
+        }
+        meth.instructions = insns;
+    }
+
+    private static int getAnnoValue(AnnotationNode anno) {
+        if (anno.values == null) {
+            return 0;
+        }
+        for (int i = 0; i < anno.values.size(); i += 2) {
+            String name = (String) anno.values.get(i);
+            Object value = anno.values.get(i + 1);
+            if (name.equals("value")) {
+                return (Integer) value;
+            }
+        }
+        return 0;
+    }
+
+    private void enhanceValidateMustExist(String className, FieldNode field, AnnotationNode anno, InsnList insns) {
+        insns.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+        insns.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, className, field.name + Utils.fieldIsSetMethodSuffix, "()Z")); // this.xxIsSet()
+        insns.add(new InsnNode(Opcodes.ICONST_1)); // true
+        LabelNode label = new LabelNode();
+        insns.add(new JumpInsnNode(Opcodes.IF_ICMPEQ, label));
+        // if (this.xxIsSet != true) {
+        insns.add(new VarInsnNode(Opcodes.ALOAD, 2)); // result
+        insns.add(new LdcInsnNode(field.name)); // name
+        insns.add(new VarInsnNode(Opcodes.ILOAD, 1)); // action
+        insns.add(new LdcInsnNode(getAnnoValue(anno))); // mask
+        // result.addMissingIf(name, action, mask);
+        insns.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, validationResultInternalName, "addMissingIf", "(Ljava/lang/String;II)V"));
+        // }
+        insns.add(label);
+    }
+
+    private void enhanceValidateMustNotExist(String className, FieldNode field, AnnotationNode anno, InsnList insns) {
+        insns.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+        insns.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, className, field.name + Utils.fieldIsSetMethodSuffix, "()Z")); // this.xxIsSet()
+        insns.add(new InsnNode(Opcodes.ICONST_0)); // false
+        LabelNode label = new LabelNode();
+        insns.add(new JumpInsnNode(Opcodes.IF_ICMPEQ, label));
+        // if (this.xxIsSet != false) {
+        insns.add(new VarInsnNode(Opcodes.ALOAD, 2)); // result
+        insns.add(new LdcInsnNode(field.name)); // name
+        insns.add(new VarInsnNode(Opcodes.ILOAD, 1)); // action
+        insns.add(new LdcInsnNode(getAnnoValue(anno))); // mask
+        // result.addRedundantIf(name, action, mask);
+        insns.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, validationResultInternalName, "addRedundantIf", "(Ljava/lang/String;II)V"));
+        // }
+        insns.add(label);
+    }
+
+    private void enhanceValidateMustNotNull(String className, FieldNode field, AnnotationNode anno, InsnList insns) {
+        if (field.desc.length() == 1) {
+            Utils.warn("field " + className + "." + field + " cannot be null, ignoring @MustNotNull annotation on this field");
+            return;
+        }
+        insns.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+        insns.add(new FieldInsnNode(Opcodes.GETFIELD, className, field.name, field.desc)); // this.xx
+        LabelNode label0 = new LabelNode();
+        insns.add(new JumpInsnNode(Opcodes.IFNULL, label0));
+        LabelNode label1 = new LabelNode();
+        insns.add(new JumpInsnNode(Opcodes.GOTO, label1));
+        insns.add(label0);
+        // if (this.xx == null) {
+        insns.add(new VarInsnNode(Opcodes.ALOAD, 2)); // result
+        insns.add(new LdcInsnNode(field.name)); // name
+        insns.add(new VarInsnNode(Opcodes.ILOAD, 1)); // action
+        insns.add(new LdcInsnNode(getAnnoValue(anno))); // mask
+        // result.addNullIf(name, action, mask);
+        insns.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, validationResultInternalName, "addNullIf", "(Ljava/lang/String;II)V"));
+        // }
+        insns.add(label1);
     }
 }
