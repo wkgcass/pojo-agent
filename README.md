@@ -8,14 +8,14 @@ A tool which enhances your pojo, powered by java-agent.
 <dependency>
   <groupId>io.vproxy</groupId>
   <artifactId>pojo-agent-api</artifactId>
-  <version>1.1.0</version>
+  <version>1.1.1</version>
 </dependency>
 ```
 
 **gradle**
 
 ```groovy
-implementation group: 'io.vproxy', name: 'pojo-agent-api', version: '1.1.0'
+implementation group: 'io.vproxy', name: 'pojo-agent-api', version: '1.1.1'
 ```
 
 ## current supported functions
