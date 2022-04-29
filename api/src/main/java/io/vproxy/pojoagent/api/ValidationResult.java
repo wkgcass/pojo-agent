@@ -55,20 +55,24 @@ public class ValidationResult {
         throw errBuilder.apply(buildErrorMessage());
     }
 
+    private static boolean matchMask(int action, int mask) {
+        return (action == 0 && (mask == 0 || mask == -1)) || (action != 0 && (action & mask) == action);
+    }
+
     public void addMissingIf(String name, int action, int mask) {
-        if ((action & mask) == action) {
+        if (matchMask(action, mask)) {
             missing.add(name);
         }
     }
 
     public void addRedundantIf(String name, int action, int mask) {
-        if ((action & mask) == action) {
+        if (matchMask(action, mask)) {
             redundant.add(name);
         }
     }
 
     public void addNullIf(String name, int action, int mask) {
-        if ((action & mask) == action) {
+        if (matchMask(action, mask)) {
             isnull.add(name);
         }
     }
