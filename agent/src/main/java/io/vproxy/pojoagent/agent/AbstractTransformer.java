@@ -62,14 +62,20 @@ public abstract class AbstractTransformer implements ClassFileTransformer {
         try {
             transformed = transform(node);
         } catch (Throwable t) {
-            Utils.log("failed to transform class " + className);
+            Utils.log(getClass().getName() + ": failed to transform class " + className);
             Utils.log(t);
             return classfileBuffer;
         }
         if (transformed) {
-            ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
-            node.accept(writer);
-            return writer.toByteArray();
+            try {
+                ClassWriter writer = new SimpleClassWriter();
+                node.accept(writer);
+                return writer.toByteArray();
+            } catch (Throwable t) {
+                Utils.log(getClass().getName() + ": failed to generate class " + className);
+                Utils.log(t);
+                return classfileBuffer;
+            }
         } else {
             return classfileBuffer;
         }
