@@ -47,6 +47,7 @@ public class PojoTransformer extends AbstractTransformer {
             if (!Utils.isSetter(meth)) {
                 continue;
             }
+
             ArrayList<String> fields;
             if (bitsetFields.isEmpty() || bitsetFields.get(bitsetFields.size() - 1).size() == 32) {
                 fields = new ArrayList<>();
@@ -62,16 +63,16 @@ public class PojoTransformer extends AbstractTransformer {
             InsnList insns = new InsnList();
             // this.bitsetN = this.bitsetN | (1 << x);
 
-            insns.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+            insns.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this stack=1
             // {
-            insns.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
-            insns.add(new FieldInsnNode(Opcodes.GETFIELD, className, bitSetFieldName, "I")); // this.bitsetN
-            insns.add(new InsnNode(Opcodes.ICONST_1)); // 1
-            insns.add(new IntInsnNode(Opcodes.BIPUSH, shift)); // x
-            insns.add(new InsnNode(Opcodes.ISHL)); // 1 << x
-            insns.add(new InsnNode(Opcodes.IOR));
+            insns.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this stack=1+1=2
+            insns.add(new FieldInsnNode(Opcodes.GETFIELD, className, bitSetFieldName, "I")); // this.bitsetN stack=2-1+1=2
+            insns.add(new InsnNode(Opcodes.ICONST_1)); // 1 stack=2+1=3
+            insns.add(new IntInsnNode(Opcodes.BIPUSH, shift)); // x stack=3+1=4
+            insns.add(new InsnNode(Opcodes.ISHL)); // 1 << x stack=4-2+1=3
+            insns.add(new InsnNode(Opcodes.IOR)); // stack=3-2+1=2
             // }
-            insns.add(new FieldInsnNode(Opcodes.PUTFIELD, className, bitSetFieldName, "I")); // this.bitsetN = ...;
+            insns.add(new FieldInsnNode(Opcodes.PUTFIELD, className, bitSetFieldName, "I")); // this.bitsetN = ...; stack=2-2=0
 
             meth.instructions.insert(insns);
 
@@ -95,26 +96,26 @@ public class PojoTransformer extends AbstractTransformer {
                     // return (this.bitsetN | (1 << x)) == (1 << x)
                     InsnList insns = new InsnList();
 
-                    insns.add(new InsnNode(Opcodes.ICONST_1)); // 1
-                    insns.add(new IntInsnNode(Opcodes.BIPUSH, shift)); // x
-                    insns.add(new InsnNode(Opcodes.ISHL)); // 1 << x
-                    insns.add(new VarInsnNode(Opcodes.ISTORE, 1)); // var a1 = 1 << x;
+                    insns.add(new InsnNode(Opcodes.ICONST_1)); // 1 stack=1
+                    insns.add(new IntInsnNode(Opcodes.BIPUSH, shift)); // x stack=1+1=2
+                    insns.add(new InsnNode(Opcodes.ISHL)); // 1 << x stack=2-2+1=1
+                    insns.add(new VarInsnNode(Opcodes.ISTORE, 1)); // var a1 = 1 << x; stack=1-1=0
 
-                    insns.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
-                    insns.add(new FieldInsnNode(Opcodes.GETFIELD, className, bitSetFieldName, "I")); // this.bitsetN
-                    insns.add(new VarInsnNode(Opcodes.ILOAD, 1)); // a1
-                    insns.add(new InsnNode(Opcodes.IAND)); // this.bitsetN & a1
+                    insns.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this stack=1
+                    insns.add(new FieldInsnNode(Opcodes.GETFIELD, className, bitSetFieldName, "I")); // this.bitsetN stack=1-1+1=1
+                    insns.add(new VarInsnNode(Opcodes.ILOAD, 1)); // a1 stack=1+1=2
+                    insns.add(new InsnNode(Opcodes.IAND)); // this.bitsetN & a1 stack=2-2+1=1
 
-                    insns.add(new VarInsnNode(Opcodes.ILOAD, 1)); // a1
+                    insns.add(new VarInsnNode(Opcodes.ILOAD, 1)); // a1 stack=1+1=2
 
                     LabelNode label = new LabelNode();
-                    insns.add(new JumpInsnNode(Opcodes.IF_ICMPEQ, label)); // if (this.bitsetN & a1) == a1
-                    insns.add(new InsnNode(Opcodes.ICONST_0)); // false
-                    insns.add(new InsnNode(Opcodes.IRETURN)); // return false;
+                    insns.add(new JumpInsnNode(Opcodes.IF_ICMPEQ, label)); // if (this.bitsetN & a1) == a1 stack=2-2=0
+                    insns.add(new InsnNode(Opcodes.ICONST_0)); // false stack=1
+                    insns.add(new InsnNode(Opcodes.IRETURN)); // return false; stack=1-1=0
 
                     insns.add(label);
-                    insns.add(new InsnNode(Opcodes.ICONST_1)); // true
-                    insns.add(new InsnNode(Opcodes.IRETURN)); // return true;
+                    insns.add(new InsnNode(Opcodes.ICONST_1)); // true stack=1
+                    insns.add(new InsnNode(Opcodes.IRETURN)); // return true; stack=1-1=0
 
                     meth.instructions = insns;
                     node.methods.add(meth);
@@ -126,19 +127,19 @@ public class PojoTransformer extends AbstractTransformer {
                     // this.bitsetN = this.bitsetN & ~(1 << x)
                     InsnList insns = new InsnList();
 
-                    insns.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+                    insns.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this stack=1
                     // {
-                    insns.add(new InsnNode(Opcodes.ICONST_1)); // 1
-                    insns.add(new IntInsnNode(Opcodes.BIPUSH, shift)); // x
-                    insns.add(new InsnNode(Opcodes.ISHL)); // 1 << x
-                    insns.add(new InsnNode(Opcodes.ICONST_M1));
-                    insns.add(new InsnNode(Opcodes.IXOR)); // ~(1 << x)
+                    insns.add(new InsnNode(Opcodes.ICONST_1)); // 1 stack=1+1=2
+                    insns.add(new IntInsnNode(Opcodes.BIPUSH, shift)); // x stack=2+1=3
+                    insns.add(new InsnNode(Opcodes.ISHL)); // 1 << x stack=3-2+1=2
+                    insns.add(new InsnNode(Opcodes.ICONST_M1)); // stack=2+1=3
+                    insns.add(new InsnNode(Opcodes.IXOR)); // ~(1 << x) stack=3-2+1=2
 
-                    insns.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
-                    insns.add(new FieldInsnNode(Opcodes.GETFIELD, className, bitSetFieldName, "I")); // this.bitsetN
-                    insns.add(new InsnNode(Opcodes.IAND)); // this.bitsetN & ~(1 << x)
+                    insns.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this stack=2+1=3
+                    insns.add(new FieldInsnNode(Opcodes.GETFIELD, className, bitSetFieldName, "I")); // this.bitsetN stack=3-1+1=3
+                    insns.add(new InsnNode(Opcodes.IAND)); // this.bitsetN & ~(1 << x) stack=3-2+1=2
                     // }
-                    insns.add(new FieldInsnNode(Opcodes.PUTFIELD, className, bitSetFieldName, "I")); // this.bitsetN = ...
+                    insns.add(new FieldInsnNode(Opcodes.PUTFIELD, className, bitSetFieldName, "I")); // this.bitsetN = ... stack=2-2=0
                     insns.add(new InsnNode(Opcodes.RETURN)); // return;
 
                     meth.instructions = insns;
@@ -208,29 +209,29 @@ public class PojoTransformer extends AbstractTransformer {
                 if (field == null && getter == null) {
                     continue;
                 }
-                insns.add(new VarInsnNode(Opcodes.ALOAD, 1)); // another
-                insns.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, className, fieldName + Utils.fieldIsSetMethodSuffix, "()Z")); // another.xxIsSet
-                insns.add(new InsnNode(Opcodes.ICONST_0)); // false
+                insns.add(new VarInsnNode(Opcodes.ALOAD, 1)); // another stack=1
+                insns.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, className, fieldName + Utils.fieldIsSetMethodSuffix, "()Z")); // another.xxIsSet stack=1-1+1=1
+                insns.add(new InsnNode(Opcodes.ICONST_0)); // false stack=1+1=2
                 LabelNode label = new LabelNode();
-                insns.add(new JumpInsnNode(Opcodes.IF_ICMPEQ, label));
+                insns.add(new JumpInsnNode(Opcodes.IF_ICMPEQ, label)); // stack=2-2=0
                 // : if (another.xxIsSet != false) {
-                insns.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
+                insns.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this stack=1
                 // {
                 String setterDesc;
                 if (field != null) {
-                    insns.add(new VarInsnNode(Opcodes.ALOAD, 1)); // another
-                    insns.add(new FieldInsnNode(Opcodes.GETFIELD, className, field.name, field.desc)); // another.xx
+                    insns.add(new VarInsnNode(Opcodes.ALOAD, 1)); // another stack=1+1=2
+                    insns.add(new FieldInsnNode(Opcodes.GETFIELD, className, field.name, field.desc)); // another.xx stack=2-1+1=2
                     setterDesc = "(" + field.desc + ")V";
                 } else {
                     // assert getter != null;
-                    insns.add(new VarInsnNode(Opcodes.ALOAD, 1)); // another
-                    insns.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, className, getter.name, getter.desc)); // another.getXx()
+                    insns.add(new VarInsnNode(Opcodes.ALOAD, 1)); // another stack=1+1=2
+                    insns.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, className, getter.name, getter.desc)); // another.getXx() stack=2-1+1=2
                     setterDesc = "(" + getter.desc.substring(2) + ")V";
                 }
                 // }
                 insns.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, className,
                     "set" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1),
-                    setterDesc)); // this.setXx(...);
+                    setterDesc)); // this.setXx(...); stack=2-2=0
                 // }
                 insns.add(label);
             }
@@ -263,11 +264,11 @@ public class PojoTransformer extends AbstractTransformer {
         }
 
         // var result = new ValidationResult();
-        insns.add(new TypeInsnNode(Opcodes.NEW, validationResultInternalName));
-        insns.add(new InsnNode(Opcodes.DUP));
-        insns.add(new VarInsnNode(Opcodes.ILOAD, 1)); // action
-        insns.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, validationResultInternalName, "<init>", "(I)V"));
-        insns.add(new VarInsnNode(Opcodes.ASTORE, 2));
+        insns.add(new TypeInsnNode(Opcodes.NEW, validationResultInternalName)); // stack=1
+        insns.add(new InsnNode(Opcodes.DUP)); // stack=1+1=2
+        insns.add(new VarInsnNode(Opcodes.ILOAD, 1)); // action stack=2+1=3
+        insns.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, validationResultInternalName, "<init>", "(I)V")); // stack=3-2=1
+        insns.add(new VarInsnNode(Opcodes.ASTORE, 2)); // stack=1-1=0
 
         // validate fields
         for (FieldNode field : node.fields) {
@@ -294,11 +295,11 @@ public class PojoTransformer extends AbstractTransformer {
         for (MethodNode post : node.methods) {
             if (post.name.equals("postValidate") && post.desc.equals("(" + validationResultDesc + ")" + validationResultDesc)) {
                 Utils.log("postValidate found for " + className);
-                insns.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
-                insns.add(new VarInsnNode(Opcodes.ALOAD, 2)); // result
+                insns.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this stack=1
+                insns.add(new VarInsnNode(Opcodes.ALOAD, 2)); // result stack=1+1=2
                 int invokeOp = Utils.isPrivate(meth.access) ? Opcodes.INVOKESPECIAL : Opcodes.INVOKEVIRTUAL;
-                insns.add(new MethodInsnNode(invokeOp, className, "postValidate", "(" + validationResultDesc + ")" + validationResultDesc));
-                insns.add(new InsnNode(Opcodes.ARETURN));
+                insns.add(new MethodInsnNode(invokeOp, className, "postValidate", "(" + validationResultDesc + ")" + validationResultDesc)); // stack=2-2+1=1
+                insns.add(new InsnNode(Opcodes.ARETURN)); // stack=1-1=0
                 postFound = true;
                 break;
             }
@@ -306,8 +307,8 @@ public class PojoTransformer extends AbstractTransformer {
 
         Utils.log("method enhanced: " + className + "." + meth.name + meth.desc);
         if (!postFound) {
-            insns.add(new VarInsnNode(Opcodes.ALOAD, 2));
-            insns.add(new InsnNode(Opcodes.ARETURN));
+            insns.add(new VarInsnNode(Opcodes.ALOAD, 2)); // stack=1
+            insns.add(new InsnNode(Opcodes.ARETURN)); // stack=1-1=0
         }
         meth.instructions = insns;
     }
@@ -327,35 +328,35 @@ public class PojoTransformer extends AbstractTransformer {
     }
 
     private void enhanceValidateMustExist(String className, FieldNode field, AnnotationNode anno, InsnList insns) {
-        insns.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
-        insns.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, className, field.name + Utils.fieldIsSetMethodSuffix, "()Z")); // this.xxIsSet()
-        insns.add(new InsnNode(Opcodes.ICONST_1)); // true
+        insns.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this stack=1
+        insns.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, className, field.name + Utils.fieldIsSetMethodSuffix, "()Z")); // this.xxIsSet() stack=1-1+1=1
+        insns.add(new InsnNode(Opcodes.ICONST_1)); // true stack=1+1=2
         LabelNode label = new LabelNode();
-        insns.add(new JumpInsnNode(Opcodes.IF_ICMPEQ, label));
+        insns.add(new JumpInsnNode(Opcodes.IF_ICMPEQ, label)); // stack=2-2=0
         // if (this.xxIsSet != true) {
-        insns.add(new VarInsnNode(Opcodes.ALOAD, 2)); // result
-        insns.add(new LdcInsnNode(field.name)); // name
-        insns.add(new VarInsnNode(Opcodes.ILOAD, 1)); // action
-        insns.add(new LdcInsnNode(getAnnoValue(anno))); // mask
-        // result.addMissingIf(name, action, mask);
+        insns.add(new VarInsnNode(Opcodes.ALOAD, 2)); // result stack=1
+        insns.add(new LdcInsnNode(field.name)); // name stack=1+1=2
+        insns.add(new VarInsnNode(Opcodes.ILOAD, 1)); // action stack=2+1=3
+        insns.add(new LdcInsnNode(getAnnoValue(anno))); // mask stack=3+1=4
+        // result.addMissingIf(name, action, mask); stack=4-4=0
         insns.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, validationResultInternalName, "addMissingIf", "(Ljava/lang/String;II)V"));
         // }
         insns.add(label);
     }
 
     private void enhanceValidateMustNotExist(String className, FieldNode field, AnnotationNode anno, InsnList insns) {
-        insns.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
-        insns.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, className, field.name + Utils.fieldIsSetMethodSuffix, "()Z")); // this.xxIsSet()
-        insns.add(new InsnNode(Opcodes.ICONST_0)); // false
+        insns.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this stack=1
+        insns.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, className, field.name + Utils.fieldIsSetMethodSuffix, "()Z")); // this.xxIsSet() stack=1-1+1=1
+        insns.add(new InsnNode(Opcodes.ICONST_0)); // false stack=1+1=2
         LabelNode label = new LabelNode();
-        insns.add(new JumpInsnNode(Opcodes.IF_ICMPEQ, label));
+        insns.add(new JumpInsnNode(Opcodes.IF_ICMPEQ, label)); // stack=2-2=0
         // if (this.xxIsSet != false) {
-        insns.add(new VarInsnNode(Opcodes.ALOAD, 2)); // result
-        insns.add(new LdcInsnNode(field.name)); // name
-        insns.add(new VarInsnNode(Opcodes.ILOAD, 1)); // action
-        insns.add(new LdcInsnNode(getAnnoValue(anno))); // mask
+        insns.add(new VarInsnNode(Opcodes.ALOAD, 2)); // result stack=1
+        insns.add(new LdcInsnNode(field.name)); // name stack=1+1=2
+        insns.add(new VarInsnNode(Opcodes.ILOAD, 1)); // action stack=2+1=3
+        insns.add(new LdcInsnNode(getAnnoValue(anno))); // mask stack=3+1=4
         // result.addRedundantIf(name, action, mask);
-        insns.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, validationResultInternalName, "addRedundantIf", "(Ljava/lang/String;II)V"));
+        insns.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, validationResultInternalName, "addRedundantIf", "(Ljava/lang/String;II)V")); // stack=4-4=0
         // }
         insns.add(label);
     }
@@ -365,20 +366,20 @@ public class PojoTransformer extends AbstractTransformer {
             Utils.warn("field " + className + "." + field + " cannot be null, ignoring @MustNotNull annotation on this field");
             return;
         }
-        insns.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this
-        insns.add(new FieldInsnNode(Opcodes.GETFIELD, className, field.name, field.desc)); // this.xx
+        insns.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this stack=1
+        insns.add(new FieldInsnNode(Opcodes.GETFIELD, className, field.name, field.desc)); // this.xx stack=1-1+1=1
         LabelNode label0 = new LabelNode();
-        insns.add(new JumpInsnNode(Opcodes.IFNULL, label0));
+        insns.add(new JumpInsnNode(Opcodes.IFNULL, label0)); // stack=1-1=0
         LabelNode label1 = new LabelNode();
         insns.add(new JumpInsnNode(Opcodes.GOTO, label1));
         insns.add(label0);
         // if (this.xx == null) {
-        insns.add(new VarInsnNode(Opcodes.ALOAD, 2)); // result
-        insns.add(new LdcInsnNode(field.name)); // name
-        insns.add(new VarInsnNode(Opcodes.ILOAD, 1)); // action
-        insns.add(new LdcInsnNode(getAnnoValue(anno))); // mask
+        insns.add(new VarInsnNode(Opcodes.ALOAD, 2)); // result stack=1
+        insns.add(new LdcInsnNode(field.name)); // name stack=1+1=2
+        insns.add(new VarInsnNode(Opcodes.ILOAD, 1)); // action stack=2+1=3
+        insns.add(new LdcInsnNode(getAnnoValue(anno))); // mask stack=3+1=4
         // result.addNullIf(name, action, mask);
-        insns.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, validationResultInternalName, "addNullIf", "(Ljava/lang/String;II)V"));
+        insns.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, validationResultInternalName, "addNullIf", "(Ljava/lang/String;II)V")); // stack=4-4=0
         // }
         insns.add(label1);
     }
