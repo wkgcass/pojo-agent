@@ -57,21 +57,34 @@ public class CallerTransformer extends AbstractTransformer {
                 continue;
 
             AbstractInsnNode prev = insns[i - 1];
-            if (!(prev instanceof MethodInsnNode))
+            if (!(prev instanceof MethodInsnNode) && !(prev instanceof FieldInsnNode))
                 continue;
 
-            MethodInsnNode prevMethInsn = (MethodInsnNode) prev;
-            if (!Utils.isGetterInvocation(prevMethInsn))
-                continue;
+            String fieldName;
+            String owner;
+            if (prev instanceof MethodInsnNode) {
+                MethodInsnNode prevMethInsn = (MethodInsnNode) prev;
+                if (!Utils.isGetterInvocation(prevMethInsn))
+                    continue;
+
+                fieldName = Utils.fieldName(prevMethInsn.name);
+                owner = prevMethInsn.owner;
+            } else {
+                FieldInsnNode prevFieldInsn = (FieldInsnNode) prev;
+                if (prevFieldInsn.getOpcode() != Opcodes.GETFIELD)
+                    continue;
+                fieldName = prevFieldInsn.name;
+                owner = prevFieldInsn.owner;
+            }
 
             if (Utils.isFieldIsSetMethodInvocation(methInsn)) {
-                String methodName = Utils.fieldName(prevMethInsn.name) + Utils.fieldIsSetMethodSuffix;
-                meth.instructions.set(insns[i - 1], new MethodInsnNode(Opcodes.INVOKEVIRTUAL, prevMethInsn.owner, methodName, "()Z"));
+                String methodName = fieldName + Utils.fieldIsSetMethodSuffix;
+                meth.instructions.set(insns[i - 1], new MethodInsnNode(Opcodes.INVOKEVIRTUAL, owner, methodName, "()Z"));
                 meth.instructions.set(insns[i], new InsnNode(Opcodes.NOP));
                 fieldIsSetTransformed = true;
             } else /* isUnsetFieldMethodInvocation */ {
-                String methodName = Utils.fieldName(prevMethInsn.name) + Utils.unsetFieldMethodSuffix;
-                meth.instructions.set(insns[i - 1], new MethodInsnNode(Opcodes.INVOKEVIRTUAL, prevMethInsn.owner, methodName, "()V"));
+                String methodName = fieldName + Utils.unsetFieldMethodSuffix;
+                meth.instructions.set(insns[i - 1], new MethodInsnNode(Opcodes.INVOKEVIRTUAL, owner, methodName, "()V"));
                 meth.instructions.set(insns[i], new InsnNode(Opcodes.NOP));
                 unsetFieldTransformed = true;
             }

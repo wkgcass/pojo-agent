@@ -61,6 +61,17 @@ public class SmallEntity implements Entity {
 
     @PojoCaller
     @Override
+    public void doUnsetByField(BitSet bitset) {
+        if (bitset.get(0)) {
+            PojoAgent.unsetField(name);
+        }
+        if (bitset.get(1)) {
+            PojoAgent.unsetField(ok);
+        }
+    }
+
+    @PojoCaller
+    @Override
     public void doAssert(BitSet bitset) {
         if (bitset.get(0)) {
             assertTrue(PojoAgent.fieldIsSet(getName()));
@@ -71,6 +82,21 @@ public class SmallEntity implements Entity {
             assertTrue(PojoAgent.fieldIsSet(isOk()));
         } else {
             assertFalse(PojoAgent.fieldIsSet(isOk()));
+        }
+    }
+
+    @PojoCaller
+    @Override
+    public void doAssertByField(BitSet bitset) {
+        if (bitset.get(0)) {
+            assertTrue(PojoAgent.fieldIsSet(name));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(name));
+        }
+        if (bitset.get(1)) {
+            assertTrue(PojoAgent.fieldIsSet(ok));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(ok));
         }
     }
 }

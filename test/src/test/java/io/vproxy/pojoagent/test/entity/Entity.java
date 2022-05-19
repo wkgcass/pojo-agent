@@ -7,5 +7,9 @@ public interface Entity {
 
     void doUnset(BitSet bitset);
 
+    void doUnsetByField(BitSet bitset);
+
     void doAssert(BitSet bitset);
+
+    void doAssertByField(BitSet bitset);
 }

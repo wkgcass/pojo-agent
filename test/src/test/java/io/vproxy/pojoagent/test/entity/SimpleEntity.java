@@ -251,6 +251,50 @@ public class SimpleEntity implements Entity, PojoUpdateFrom<SimpleEntity>, PojoV
 
     @PojoCaller
     @Override
+    public void doUnsetByField(BitSet bitset) {
+        if (bitset.get(0)) {
+            PojoAgent.unsetField(a);
+        }
+        if (bitset.get(1)) {
+            PojoAgent.unsetField(i);
+        }
+        if (bitset.get(2)) {
+            PojoAgent.unsetField(l);
+        }
+        if (bitset.get(3)) {
+            PojoAgent.unsetField(d);
+        }
+        if (bitset.get(4)) {
+            PojoAgent.unsetField(f);
+        }
+        if (bitset.get(5)) {
+            PojoAgent.unsetField(c);
+        }
+        if (bitset.get(6)) {
+            PojoAgent.unsetField(z);
+        }
+        if (bitset.get(7)) {
+            PojoAgent.unsetField(s);
+        }
+        if (bitset.get(8)) {
+            PojoAgent.unsetField(b);
+        }
+        if (bitset.get(9)) {
+            PojoAgent.unsetField(aa);
+        }
+        if (bitset.get(10)) {
+            PojoAgent.unsetField(ai);
+        }
+        if (bitset.get(11)) {
+            PojoAgent.unsetField(aaa);
+        }
+        if (bitset.get(12)) {
+            PojoAgent.unsetField(aii);
+        }
+    }
+
+    @PojoCaller
+    @Override
     public void doAssert(BitSet bitset) {
         if (bitset.get(0)) {
             assertTrue(PojoAgent.fieldIsSet(this.getA()));
@@ -316,6 +360,76 @@ public class SimpleEntity implements Entity, PojoUpdateFrom<SimpleEntity>, PojoV
             assertTrue(PojoAgent.fieldIsSet(this.getAii()));
         } else {
             assertFalse(PojoAgent.fieldIsSet(this.getAii()));
+        }
+    }
+
+    @PojoCaller
+    @Override
+    public void doAssertByField(BitSet bitset) {
+        if (bitset.get(0)) {
+            assertTrue(PojoAgent.fieldIsSet(a));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(a));
+        }
+        if (bitset.get(1)) {
+            assertTrue(PojoAgent.fieldIsSet(i));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(i));
+        }
+        if (bitset.get(2)) {
+            assertTrue(PojoAgent.fieldIsSet(l));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(l));
+        }
+        if (bitset.get(3)) {
+            assertTrue(PojoAgent.fieldIsSet(d));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(d));
+        }
+        if (bitset.get(4)) {
+            assertTrue(PojoAgent.fieldIsSet(f));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(f));
+        }
+        if (bitset.get(5)) {
+            assertTrue(PojoAgent.fieldIsSet(c));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(c));
+        }
+        if (bitset.get(6)) {
+            assertTrue(PojoAgent.fieldIsSet(z));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(z));
+        }
+        if (bitset.get(7)) {
+            assertTrue(PojoAgent.fieldIsSet(s));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(s));
+        }
+        if (bitset.get(8)) {
+            assertTrue(PojoAgent.fieldIsSet(b));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(b));
+        }
+        if (bitset.get(9)) {
+            assertTrue(PojoAgent.fieldIsSet(aa));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(aa));
+        }
+        if (bitset.get(10)) {
+            assertTrue(PojoAgent.fieldIsSet(ai));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(ai));
+        }
+        if (bitset.get(11)) {
+            assertTrue(PojoAgent.fieldIsSet(aaa));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(aaa));
+        }
+        if (bitset.get(12)) {
+            assertTrue(PojoAgent.fieldIsSet(aii));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(aii));
         }
     }
 

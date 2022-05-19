@@ -1147,6 +1147,221 @@ public class BigEntity implements Entity {
 
     @PojoCaller
     @Override
+    public void doUnsetByField(BitSet bitset) {
+        if (bitset.get(0)) {
+            PojoAgent.unsetField(this.f0);
+        }
+        if (bitset.get(1)) {
+            PojoAgent.unsetField(this.f1);
+        }
+        if (bitset.get(2)) {
+            PojoAgent.unsetField(this.f2);
+        }
+        if (bitset.get(3)) {
+            PojoAgent.unsetField(this.f3);
+        }
+        if (bitset.get(4)) {
+            PojoAgent.unsetField(this.f4);
+        }
+        if (bitset.get(5)) {
+            PojoAgent.unsetField(this.f5);
+        }
+        if (bitset.get(6)) {
+            PojoAgent.unsetField(this.f6);
+        }
+        if (bitset.get(7)) {
+            PojoAgent.unsetField(this.f7);
+        }
+        if (bitset.get(8)) {
+            PojoAgent.unsetField(this.f8);
+        }
+        if (bitset.get(9)) {
+            PojoAgent.unsetField(this.f9);
+        }
+        if (bitset.get(10)) {
+            PojoAgent.unsetField(this.f10);
+        }
+        if (bitset.get(11)) {
+            PojoAgent.unsetField(this.f11);
+        }
+        if (bitset.get(12)) {
+            PojoAgent.unsetField(this.f12);
+        }
+        if (bitset.get(13)) {
+            PojoAgent.unsetField(this.f13);
+        }
+        if (bitset.get(14)) {
+            PojoAgent.unsetField(this.f14);
+        }
+        if (bitset.get(15)) {
+            PojoAgent.unsetField(this.f15);
+        }
+        if (bitset.get(16)) {
+            PojoAgent.unsetField(this.f16);
+        }
+        if (bitset.get(17)) {
+            PojoAgent.unsetField(this.f17);
+        }
+        if (bitset.get(18)) {
+            PojoAgent.unsetField(this.f18);
+        }
+        if (bitset.get(19)) {
+            PojoAgent.unsetField(this.f19);
+        }
+        if (bitset.get(20)) {
+            PojoAgent.unsetField(this.f20);
+        }
+        if (bitset.get(21)) {
+            PojoAgent.unsetField(this.f21);
+        }
+        if (bitset.get(22)) {
+            PojoAgent.unsetField(this.f22);
+        }
+        if (bitset.get(23)) {
+            PojoAgent.unsetField(this.f23);
+        }
+        if (bitset.get(24)) {
+            PojoAgent.unsetField(this.f24);
+        }
+        if (bitset.get(25)) {
+            PojoAgent.unsetField(this.f25);
+        }
+        if (bitset.get(26)) {
+            PojoAgent.unsetField(this.f26);
+        }
+        if (bitset.get(27)) {
+            PojoAgent.unsetField(this.f27);
+        }
+        if (bitset.get(28)) {
+            PojoAgent.unsetField(this.f28);
+        }
+        if (bitset.get(29)) {
+            PojoAgent.unsetField(this.f29);
+        }
+        if (bitset.get(30)) {
+            PojoAgent.unsetField(this.f30);
+        }
+        if (bitset.get(31)) {
+            PojoAgent.unsetField(this.f31);
+        }
+        if (bitset.get(32)) {
+            PojoAgent.unsetField(this.f32);
+        }
+        if (bitset.get(33)) {
+            PojoAgent.unsetField(this.f33);
+        }
+        if (bitset.get(34)) {
+            PojoAgent.unsetField(this.f34);
+        }
+        if (bitset.get(35)) {
+            PojoAgent.unsetField(this.f35);
+        }
+        if (bitset.get(36)) {
+            PojoAgent.unsetField(this.f36);
+        }
+        if (bitset.get(37)) {
+            PojoAgent.unsetField(this.f37);
+        }
+        if (bitset.get(38)) {
+            PojoAgent.unsetField(this.f38);
+        }
+        if (bitset.get(39)) {
+            PojoAgent.unsetField(this.f39);
+        }
+        if (bitset.get(40)) {
+            PojoAgent.unsetField(this.f40);
+        }
+        if (bitset.get(41)) {
+            PojoAgent.unsetField(this.f41);
+        }
+        if (bitset.get(42)) {
+            PojoAgent.unsetField(this.f42);
+        }
+        if (bitset.get(43)) {
+            PojoAgent.unsetField(this.f43);
+        }
+        if (bitset.get(44)) {
+            PojoAgent.unsetField(this.f44);
+        }
+        if (bitset.get(45)) {
+            PojoAgent.unsetField(this.f45);
+        }
+        if (bitset.get(46)) {
+            PojoAgent.unsetField(this.f46);
+        }
+        if (bitset.get(47)) {
+            PojoAgent.unsetField(this.f47);
+        }
+        if (bitset.get(48)) {
+            PojoAgent.unsetField(this.f48);
+        }
+        if (bitset.get(49)) {
+            PojoAgent.unsetField(this.f49);
+        }
+        if (bitset.get(50)) {
+            PojoAgent.unsetField(this.f50);
+        }
+        if (bitset.get(51)) {
+            PojoAgent.unsetField(this.f51);
+        }
+        if (bitset.get(52)) {
+            PojoAgent.unsetField(this.f52);
+        }
+        if (bitset.get(53)) {
+            PojoAgent.unsetField(this.f53);
+        }
+        if (bitset.get(54)) {
+            PojoAgent.unsetField(this.f54);
+        }
+        if (bitset.get(55)) {
+            PojoAgent.unsetField(this.f55);
+        }
+        if (bitset.get(56)) {
+            PojoAgent.unsetField(this.f56);
+        }
+        if (bitset.get(57)) {
+            PojoAgent.unsetField(this.f57);
+        }
+        if (bitset.get(58)) {
+            PojoAgent.unsetField(this.f58);
+        }
+        if (bitset.get(59)) {
+            PojoAgent.unsetField(this.f59);
+        }
+        if (bitset.get(60)) {
+            PojoAgent.unsetField(this.f60);
+        }
+        if (bitset.get(61)) {
+            PojoAgent.unsetField(this.f61);
+        }
+        if (bitset.get(62)) {
+            PojoAgent.unsetField(this.f62);
+        }
+        if (bitset.get(63)) {
+            PojoAgent.unsetField(this.f63);
+        }
+        if (bitset.get(64)) {
+            PojoAgent.unsetField(this.f64);
+        }
+        if (bitset.get(65)) {
+            PojoAgent.unsetField(this.f65);
+        }
+        if (bitset.get(66)) {
+            PojoAgent.unsetField(this.f66);
+        }
+        if (bitset.get(67)) {
+            PojoAgent.unsetField(this.f67);
+        }
+        if (bitset.get(68)) {
+            PojoAgent.unsetField(this.f68);
+        }
+        if (bitset.get(69)) {
+            PojoAgent.unsetField(this.f69);
+        }
+    }
+
+    @PojoCaller
+    @Override
     public void doAssert(BitSet bitset) {
         if (bitset.get(0)) {
             assertTrue(PojoAgent.fieldIsSet(this.getF0()));
@@ -1497,6 +1712,361 @@ public class BigEntity implements Entity {
             assertTrue(PojoAgent.fieldIsSet(this.getF69()));
         } else {
             assertFalse(PojoAgent.fieldIsSet(this.getF69()));
+        }
+    }
+
+    @PojoCaller
+    @Override
+    public void doAssertByField(BitSet bitset) {
+        if (bitset.get(0)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f0));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f0));
+        }
+        if (bitset.get(1)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f1));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f1));
+        }
+        if (bitset.get(2)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f2));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f2));
+        }
+        if (bitset.get(3)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f3));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f3));
+        }
+        if (bitset.get(4)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f4));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f4));
+        }
+        if (bitset.get(5)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f5));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f5));
+        }
+        if (bitset.get(6)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f6));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f6));
+        }
+        if (bitset.get(7)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f7));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f7));
+        }
+        if (bitset.get(8)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f8));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f8));
+        }
+        if (bitset.get(9)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f9));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f9));
+        }
+        if (bitset.get(10)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f10));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f10));
+        }
+        if (bitset.get(11)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f11));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f11));
+        }
+        if (bitset.get(12)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f12));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f12));
+        }
+        if (bitset.get(13)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f13));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f13));
+        }
+        if (bitset.get(14)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f14));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f14));
+        }
+        if (bitset.get(15)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f15));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f15));
+        }
+        if (bitset.get(16)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f16));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f16));
+        }
+        if (bitset.get(17)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f17));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f17));
+        }
+        if (bitset.get(18)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f18));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f18));
+        }
+        if (bitset.get(19)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f19));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f19));
+        }
+        if (bitset.get(20)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f20));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f20));
+        }
+        if (bitset.get(21)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f21));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f21));
+        }
+        if (bitset.get(22)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f22));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f22));
+        }
+        if (bitset.get(23)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f23));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f23));
+        }
+        if (bitset.get(24)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f24));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f24));
+        }
+        if (bitset.get(25)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f25));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f25));
+        }
+        if (bitset.get(26)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f26));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f26));
+        }
+        if (bitset.get(27)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f27));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f27));
+        }
+        if (bitset.get(28)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f28));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f28));
+        }
+        if (bitset.get(29)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f29));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f29));
+        }
+        if (bitset.get(30)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f30));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f30));
+        }
+        if (bitset.get(31)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f31));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f31));
+        }
+        if (bitset.get(32)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f32));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f32));
+        }
+        if (bitset.get(33)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f33));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f33));
+        }
+        if (bitset.get(34)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f34));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f34));
+        }
+        if (bitset.get(35)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f35));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f35));
+        }
+        if (bitset.get(36)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f36));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f36));
+        }
+        if (bitset.get(37)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f37));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f37));
+        }
+        if (bitset.get(38)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f38));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f38));
+        }
+        if (bitset.get(39)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f39));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f39));
+        }
+        if (bitset.get(40)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f40));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f40));
+        }
+        if (bitset.get(41)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f41));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f41));
+        }
+        if (bitset.get(42)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f42));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f42));
+        }
+        if (bitset.get(43)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f43));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f43));
+        }
+        if (bitset.get(44)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f44));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f44));
+        }
+        if (bitset.get(45)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f45));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f45));
+        }
+        if (bitset.get(46)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f46));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f46));
+        }
+        if (bitset.get(47)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f47));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f47));
+        }
+        if (bitset.get(48)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f48));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f48));
+        }
+        if (bitset.get(49)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f49));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f49));
+        }
+        if (bitset.get(50)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f50));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f50));
+        }
+        if (bitset.get(51)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f51));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f51));
+        }
+        if (bitset.get(52)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f52));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f52));
+        }
+        if (bitset.get(53)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f53));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f53));
+        }
+        if (bitset.get(54)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f54));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f54));
+        }
+        if (bitset.get(55)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f55));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f55));
+        }
+        if (bitset.get(56)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f56));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f56));
+        }
+        if (bitset.get(57)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f57));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f57));
+        }
+        if (bitset.get(58)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f58));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f58));
+        }
+        if (bitset.get(59)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f59));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f59));
+        }
+        if (bitset.get(60)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f60));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f60));
+        }
+        if (bitset.get(61)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f61));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f61));
+        }
+        if (bitset.get(62)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f62));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f62));
+        }
+        if (bitset.get(63)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f63));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f63));
+        }
+        if (bitset.get(64)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f64));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f64));
+        }
+        if (bitset.get(65)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f65));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f65));
+        }
+        if (bitset.get(66)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f66));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f66));
+        }
+        if (bitset.get(67)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f67));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f67));
+        }
+        if (bitset.get(68)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f68));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f68));
+        }
+        if (bitset.get(69)) {
+            assertTrue(PojoAgent.fieldIsSet(this.f69));
+        } else {
+            assertFalse(PojoAgent.fieldIsSet(this.f69));
         }
     }
 

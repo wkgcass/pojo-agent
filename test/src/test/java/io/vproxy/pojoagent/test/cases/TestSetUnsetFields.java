@@ -49,6 +49,7 @@ public class TestSetUnsetFields {
                 }
                 entity.doSet(bitset);
                 entity.doAssert(bitset);
+                entity.doAssertByField(bitset);
 
                 for (int index : indexes) {
                     BitSet unsetBitset = new BitSet();
@@ -57,6 +58,17 @@ public class TestSetUnsetFields {
 
                     bitset.clear(index);
                     entity.doAssert(bitset);
+                    entity.doAssertByField(bitset);
+                }
+
+                for (int index : indexes) {
+                    BitSet unsetBitset = new BitSet();
+                    unsetBitset.set(index);
+                    entity.doUnsetByField(unsetBitset);
+
+                    bitset.clear(index);
+                    entity.doAssert(bitset);
+                    entity.doAssertByField(bitset);
                 }
             }
             return;
