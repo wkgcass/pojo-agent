@@ -91,4 +91,26 @@ public class PojoAgent {
         //noinspection ResultOfMethodCallIgnored
         Version.stringifyVersion(Version.VERSION_INT); // ensure version is loaded
     }
+
+    /**
+     * get pojo-agent api version
+     *
+     * @return long value representing the api version
+     * @see Version#stringifyVersion(long)
+     * @since 1.1.3
+     */
+    public static long getApiVersion() {
+        return Version.VERSION_INT;
+    }
+
+    /**
+     * get pojo-agent agent version
+     *
+     * @return long value representing the agent version
+     * @see Version#stringifyVersion(long)
+     * @since 1.1.3
+     */
+    public static long getAgentVersion() {
+        return PojoAgentInternal.getAgentVersion();
+    }
 }

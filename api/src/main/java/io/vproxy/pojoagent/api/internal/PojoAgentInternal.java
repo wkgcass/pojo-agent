@@ -11,4 +11,9 @@ public class PojoAgentInternal {
     public static void ensurePojoAgent() {
         throw new RequirePojoAgentException();
     }
+
+    @PojoAutoImpl
+    public static long getAgentVersion() {
+        throw new RequirePojoAgentException();
+    }
 }

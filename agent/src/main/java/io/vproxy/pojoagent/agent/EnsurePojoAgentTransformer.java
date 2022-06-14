@@ -1,12 +1,10 @@
 package io.vproxy.pojoagent.agent;
 
 import jdk.internal.org.objectweb.asm.Opcodes;
-import jdk.internal.org.objectweb.asm.tree.ClassNode;
-import jdk.internal.org.objectweb.asm.tree.InsnList;
-import jdk.internal.org.objectweb.asm.tree.InsnNode;
-import jdk.internal.org.objectweb.asm.tree.MethodNode;
+import jdk.internal.org.objectweb.asm.tree.*;
 
 public class EnsurePojoAgentTransformer extends AbstractTransformer {
+    @SuppressWarnings("UnnecessaryContinue")
     @Override
     protected boolean transform(ClassNode node) {
         String classname = node.name;
@@ -18,7 +16,14 @@ public class EnsurePojoAgentTransformer extends AbstractTransformer {
                 InsnList insns = new InsnList();
                 insns.add(new InsnNode(Opcodes.RETURN));
                 meth.instructions = insns;
-                break;
+                continue;
+            }
+            if (meth.name.equals("getAgentVersion") && meth.desc.equals("()J")) {
+                InsnList insns = new InsnList();
+                insns.add(new LdcInsnNode(1_001_003L));
+                insns.add(new InsnNode(Opcodes.LRETURN));
+                meth.instructions = insns;
+                continue;
             }
         }
         return true;

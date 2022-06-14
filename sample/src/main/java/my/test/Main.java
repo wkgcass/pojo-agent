@@ -4,11 +4,14 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.vproxy.pojoagent.api.PojoAgent;
 import io.vproxy.pojoagent.api.PojoCaller;
+import io.vproxy.pojoagent.api.Version;
 
 public class Main {
     @PojoCaller
     public static void main(String[] args) throws Exception {
         PojoAgent.ensurePojoAgent();
+        System.out.println("api: " + Version.stringifyVersion(PojoAgent.getApiVersion()));
+        System.out.println("agent: " + Version.stringifyVersion(PojoAgent.getAgentVersion()));
 
         ObjectMapper om = new ObjectMapper();
 
