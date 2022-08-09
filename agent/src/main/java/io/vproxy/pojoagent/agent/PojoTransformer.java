@@ -377,6 +377,10 @@ public class PojoTransformer extends AbstractTransformer {
             Utils.warn("field " + className + "." + field + " cannot be null, ignoring @MustNotNull annotation on this field");
             return;
         }
+
+        // must check whether it exists first
+        enhanceValidateMustExist(className, field, anno, insns);
+
         insns.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this stack=1
         insns.add(new FieldInsnNode(Opcodes.GETFIELD, className, field.name, field.desc)); // this.xx stack=1-1+1=1
         LabelNode label0 = new LabelNode();
