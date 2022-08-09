@@ -42,6 +42,7 @@ public class CallerTransformer extends AbstractTransformer {
         AbstractInsnNode[] insns = meth.instructions.toArray();
 
         boolean fieldIsSetTransformed = false;
+        boolean setFieldTransformed = false;
         boolean unsetFieldTransformed = false;
 
         for (int i = 0; i < insns.length; ++i) {
@@ -50,7 +51,7 @@ public class CallerTransformer extends AbstractTransformer {
                 continue;
 
             MethodInsnNode methInsn = (MethodInsnNode) insn;
-            if (!Utils.isFieldIsSetMethodInvocation(methInsn) && !Utils.isUnsetFieldMethodInvocation(methInsn))
+            if (!Utils.isFieldIsSetMethodInvocation(methInsn) && !Utils.isUnsetFieldMethodInvocation(methInsn) && !Utils.isSetFieldMethodInvocation(methInsn))
                 continue;
 
             if (i == 0)
@@ -82,22 +83,29 @@ public class CallerTransformer extends AbstractTransformer {
                 meth.instructions.set(insns[i - 1], new MethodInsnNode(Opcodes.INVOKEVIRTUAL, owner, methodName, "()Z"));
                 meth.instructions.set(insns[i], new InsnNode(Opcodes.NOP));
                 fieldIsSetTransformed = true;
-            } else /* isUnsetFieldMethodInvocation */ {
+            } else if (Utils.isUnsetFieldMethodInvocation(methInsn)) {
                 String methodName = fieldName + Utils.unsetFieldMethodSuffix;
                 meth.instructions.set(insns[i - 1], new MethodInsnNode(Opcodes.INVOKEVIRTUAL, owner, methodName, "()V"));
                 meth.instructions.set(insns[i], new InsnNode(Opcodes.NOP));
                 unsetFieldTransformed = true;
+            } else /* isSetFieldMethodInvocation */ {
+                String methodName = fieldName + Utils.setFieldMethodSuffix;
+                meth.instructions.set(insns[i - 1], new MethodInsnNode(Opcodes.INVOKEVIRTUAL, owner, methodName, "()V"));
+                meth.instructions.set(insns[i], new InsnNode(Opcodes.NOP));
+                setFieldTransformed = true;
             }
         }
 
-        if (fieldIsSetTransformed && unsetFieldTransformed) {
-            Utils.log("transformed fieldIsSet and unsetField invocation for " + classname + "." + meth.name + meth.desc);
-        } else if (fieldIsSetTransformed) {
+        if (fieldIsSetTransformed) {
             Utils.log("transformed fieldIsSet invocation for " + classname + "." + meth.name + meth.desc);
-        } else if (unsetFieldTransformed) {
+        }
+        if (unsetFieldTransformed) {
             Utils.log("transformed unsetField invocation for " + classname + "." + meth.name + meth.desc);
         }
+        if (setFieldTransformed) {
+            Utils.log("transformed setField invocation for " + classname + "." + meth.name + meth.desc);
+        }
 
-        return fieldIsSetTransformed || unsetFieldTransformed;
+        return fieldIsSetTransformed || unsetFieldTransformed || setFieldTransformed;
     }
 }

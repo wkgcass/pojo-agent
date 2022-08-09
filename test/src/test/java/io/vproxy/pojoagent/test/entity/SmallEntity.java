@@ -50,6 +50,17 @@ public class SmallEntity implements Entity {
 
     @PojoCaller
     @Override
+    public void doSet2(BitSet bitset) {
+        if (bitset.get(0)) {
+            PojoAgent.setField(name);
+        }
+        if (bitset.get(1)) {
+            PojoAgent.setField(ok);
+        }
+    }
+
+    @PojoCaller
+    @Override
     public void doUnset(BitSet bitset) {
         if (bitset.get(0)) {
             PojoAgent.unsetField(getName());

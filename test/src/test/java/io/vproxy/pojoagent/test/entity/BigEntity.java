@@ -932,6 +932,221 @@ public class BigEntity implements Entity {
 
     @PojoCaller
     @Override
+    public void doSet2(BitSet bitset) {
+        if (bitset.get(0)) {
+            PojoAgent.setField(f0);
+        }
+        if (bitset.get(1)) {
+            PojoAgent.setField(f1);
+        }
+        if (bitset.get(2)) {
+            PojoAgent.setField(f2);
+        }
+        if (bitset.get(3)) {
+            PojoAgent.setField(f3);
+        }
+        if (bitset.get(4)) {
+            PojoAgent.setField(f4);
+        }
+        if (bitset.get(5)) {
+            PojoAgent.setField(f5);
+        }
+        if (bitset.get(6)) {
+            PojoAgent.setField(f6);
+        }
+        if (bitset.get(7)) {
+            PojoAgent.setField(f7);
+        }
+        if (bitset.get(8)) {
+            PojoAgent.setField(f8);
+        }
+        if (bitset.get(9)) {
+            PojoAgent.setField(f9);
+        }
+        if (bitset.get(10)) {
+            PojoAgent.setField(f10);
+        }
+        if (bitset.get(11)) {
+            PojoAgent.setField(f11);
+        }
+        if (bitset.get(12)) {
+            PojoAgent.setField(f12);
+        }
+        if (bitset.get(13)) {
+            PojoAgent.setField(f13);
+        }
+        if (bitset.get(14)) {
+            PojoAgent.setField(f14);
+        }
+        if (bitset.get(15)) {
+            PojoAgent.setField(f15);
+        }
+        if (bitset.get(16)) {
+            PojoAgent.setField(f16);
+        }
+        if (bitset.get(17)) {
+            PojoAgent.setField(f17);
+        }
+        if (bitset.get(18)) {
+            PojoAgent.setField(f18);
+        }
+        if (bitset.get(19)) {
+            PojoAgent.setField(f19);
+        }
+        if (bitset.get(20)) {
+            PojoAgent.setField(f20);
+        }
+        if (bitset.get(21)) {
+            PojoAgent.setField(f21);
+        }
+        if (bitset.get(22)) {
+            PojoAgent.setField(f22);
+        }
+        if (bitset.get(23)) {
+            PojoAgent.setField(f23);
+        }
+        if (bitset.get(24)) {
+            PojoAgent.setField(f24);
+        }
+        if (bitset.get(25)) {
+            PojoAgent.setField(f25);
+        }
+        if (bitset.get(26)) {
+            PojoAgent.setField(f26);
+        }
+        if (bitset.get(27)) {
+            PojoAgent.setField(f27);
+        }
+        if (bitset.get(28)) {
+            PojoAgent.setField(f28);
+        }
+        if (bitset.get(29)) {
+            PojoAgent.setField(f29);
+        }
+        if (bitset.get(30)) {
+            PojoAgent.setField(f30);
+        }
+        if (bitset.get(31)) {
+            PojoAgent.setField(f31);
+        }
+        if (bitset.get(32)) {
+            PojoAgent.setField(f32);
+        }
+        if (bitset.get(33)) {
+            PojoAgent.setField(f33);
+        }
+        if (bitset.get(34)) {
+            PojoAgent.setField(f34);
+        }
+        if (bitset.get(35)) {
+            PojoAgent.setField(f35);
+        }
+        if (bitset.get(36)) {
+            PojoAgent.setField(f36);
+        }
+        if (bitset.get(37)) {
+            PojoAgent.setField(f37);
+        }
+        if (bitset.get(38)) {
+            PojoAgent.setField(f38);
+        }
+        if (bitset.get(39)) {
+            PojoAgent.setField(f39);
+        }
+        if (bitset.get(40)) {
+            PojoAgent.setField(f40);
+        }
+        if (bitset.get(41)) {
+            PojoAgent.setField(f41);
+        }
+        if (bitset.get(42)) {
+            PojoAgent.setField(f42);
+        }
+        if (bitset.get(43)) {
+            PojoAgent.setField(f43);
+        }
+        if (bitset.get(44)) {
+            PojoAgent.setField(f44);
+        }
+        if (bitset.get(45)) {
+            PojoAgent.setField(f45);
+        }
+        if (bitset.get(46)) {
+            PojoAgent.setField(f46);
+        }
+        if (bitset.get(47)) {
+            PojoAgent.setField(f47);
+        }
+        if (bitset.get(48)) {
+            PojoAgent.setField(f48);
+        }
+        if (bitset.get(49)) {
+            PojoAgent.setField(f49);
+        }
+        if (bitset.get(50)) {
+            PojoAgent.setField(f50);
+        }
+        if (bitset.get(51)) {
+            PojoAgent.setField(f51);
+        }
+        if (bitset.get(52)) {
+            PojoAgent.setField(f52);
+        }
+        if (bitset.get(53)) {
+            PojoAgent.setField(f53);
+        }
+        if (bitset.get(54)) {
+            PojoAgent.setField(f54);
+        }
+        if (bitset.get(55)) {
+            PojoAgent.setField(f55);
+        }
+        if (bitset.get(56)) {
+            PojoAgent.setField(f56);
+        }
+        if (bitset.get(57)) {
+            PojoAgent.setField(f57);
+        }
+        if (bitset.get(58)) {
+            PojoAgent.setField(f58);
+        }
+        if (bitset.get(59)) {
+            PojoAgent.setField(f59);
+        }
+        if (bitset.get(60)) {
+            PojoAgent.setField(f60);
+        }
+        if (bitset.get(61)) {
+            PojoAgent.setField(f61);
+        }
+        if (bitset.get(62)) {
+            PojoAgent.setField(f62);
+        }
+        if (bitset.get(63)) {
+            PojoAgent.setField(f63);
+        }
+        if (bitset.get(64)) {
+            PojoAgent.setField(f64);
+        }
+        if (bitset.get(65)) {
+            PojoAgent.setField(f65);
+        }
+        if (bitset.get(66)) {
+            PojoAgent.setField(f66);
+        }
+        if (bitset.get(67)) {
+            PojoAgent.setField(f67);
+        }
+        if (bitset.get(68)) {
+            PojoAgent.setField(f68);
+        }
+        if (bitset.get(69)) {
+            PojoAgent.setField(f69);
+        }
+    }
+
+    @PojoCaller
+    @Override
     public void doUnset(BitSet bitset) {
         if (bitset.get(0)) {
             PojoAgent.unsetField(this.getF0());

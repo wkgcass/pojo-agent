@@ -8,9 +8,11 @@ public class Utils {
     public static final String fieldIsSetBitSetPrefix = "bitSet$pojo_agent$isSet$";
     public static final String fieldIsSetMethodSuffix = "$pojo_agent$isSet";
     public static final String unsetFieldMethodSuffix = "$pojo_agent$unset";
+    public static final String setFieldMethodSuffix = "$pojo_agent$set";
     public static final String pojoAgentHelperClass = PojoAgent.class.getName().replace('.', '/');
     public static final String fieldIsSetMethodName = "fieldIsSet";
     public static final String unsetFieldMethodName = "unsetField";
+    public static final String setFieldMethodName = "setField";
 
     private Utils() {
     }
@@ -99,6 +101,10 @@ public class Utils {
 
     public static boolean isUnsetFieldMethodInvocation(MethodInsnNode methInsn) {
         return methInsn.owner.equals(pojoAgentHelperClass) && methInsn.name.equals(unsetFieldMethodName);
+    }
+
+    public static boolean isSetFieldMethodInvocation(MethodInsnNode methInsn) {
+        return methInsn.owner.equals(pojoAgentHelperClass) && methInsn.name.equals(setFieldMethodName);
     }
 
     public static void warn(String msg) {

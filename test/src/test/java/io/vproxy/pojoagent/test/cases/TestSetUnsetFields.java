@@ -42,33 +42,39 @@ public class TestSetUnsetFields {
     private static void recursiveTestSetUnset(final int fieldCount, int indexToFill, int[] indexes, Supplier<Entity> supplier) {
         if (indexToFill == indexes.length) {
             for (int i = 0; i < indexes.length; ++i) {
-                Entity entity = supplier.get();
-                BitSet bitset = new BitSet();
-                for (int index : indexes) {
-                    bitset.set(index);
-                }
-                entity.doSet(bitset);
-                entity.doAssert(bitset);
-                entity.doAssertByField(bitset);
-
-                for (int index : indexes) {
-                    BitSet unsetBitset = new BitSet();
-                    unsetBitset.set(index);
-                    entity.doUnset(unsetBitset);
-
-                    bitset.clear(index);
+                for (int x = 0; x < 2; ++x) {
+                    Entity entity = supplier.get();
+                    BitSet bitset = new BitSet();
+                    for (int index : indexes) {
+                        bitset.set(index);
+                    }
+                    if (x == 0) {
+                        entity.doSet(bitset);
+                    } else {
+                        entity.doSet2(bitset);
+                    }
                     entity.doAssert(bitset);
                     entity.doAssertByField(bitset);
-                }
 
-                for (int index : indexes) {
-                    BitSet unsetBitset = new BitSet();
-                    unsetBitset.set(index);
-                    entity.doUnsetByField(unsetBitset);
+                    for (int index : indexes) {
+                        BitSet unsetBitset = new BitSet();
+                        unsetBitset.set(index);
+                        entity.doUnset(unsetBitset);
 
-                    bitset.clear(index);
-                    entity.doAssert(bitset);
-                    entity.doAssertByField(bitset);
+                        bitset.clear(index);
+                        entity.doAssert(bitset);
+                        entity.doAssertByField(bitset);
+                    }
+
+                    for (int index : indexes) {
+                        BitSet unsetBitset = new BitSet();
+                        unsetBitset.set(index);
+                        entity.doUnsetByField(unsetBitset);
+
+                        bitset.clear(index);
+                        entity.doAssert(bitset);
+                        entity.doAssertByField(bitset);
+                    }
                 }
             }
             return;

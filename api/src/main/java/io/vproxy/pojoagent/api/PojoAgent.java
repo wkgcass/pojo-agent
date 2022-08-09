@@ -44,6 +44,42 @@ public class PojoAgent {
         throw new RequirePojoCallerException();
     }
 
+    public static void setField(Object o) {
+        throw new RequirePojoCallerException();
+    }
+
+    public static void setField(int o) {
+        throw new RequirePojoCallerException();
+    }
+
+    public static void setField(long o) {
+        throw new RequirePojoCallerException();
+    }
+
+    public static void setField(float o) {
+        throw new RequirePojoCallerException();
+    }
+
+    public static void setField(double o) {
+        throw new RequirePojoCallerException();
+    }
+
+    public static void setField(short o) {
+        throw new RequirePojoCallerException();
+    }
+
+    public static void setField(byte o) {
+        throw new RequirePojoCallerException();
+    }
+
+    public static void setField(char o) {
+        throw new RequirePojoCallerException();
+    }
+
+    public static void setField(boolean o) {
+        throw new RequirePojoCallerException();
+    }
+
     public static void unsetField(Object o) {
         throw new RequirePojoCallerException();
     }

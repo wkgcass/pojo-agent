@@ -55,24 +55,13 @@ public class PojoTransformer extends AbstractTransformer {
             } else {
                 fields = bitsetFields.get(bitsetFields.size() - 1);
             }
-            fields.add(Utils.fieldName(meth.name));
-
-            String bitSetFieldName = Utils.fieldIsSetBitSetPrefix + bitsetFields.size();
-            int shift = fields.size() - 1;
+            String field = Utils.fieldName(meth.name);
+            fields.add(field);
 
             InsnList insns = new InsnList();
-            // this.bitsetN = this.bitsetN | (1 << x);
 
             insns.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this stack=1
-            // {
-            insns.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this stack=1+1=2
-            insns.add(new FieldInsnNode(Opcodes.GETFIELD, className, bitSetFieldName, "I")); // this.bitsetN stack=2-1+1=2
-            insns.add(new InsnNode(Opcodes.ICONST_1)); // 1 stack=2+1=3
-            insns.add(new IntInsnNode(Opcodes.BIPUSH, shift)); // x stack=3+1=4
-            insns.add(new InsnNode(Opcodes.ISHL)); // 1 << x stack=4-2+1=3
-            insns.add(new InsnNode(Opcodes.IOR)); // stack=3-2+1=2
-            // }
-            insns.add(new FieldInsnNode(Opcodes.PUTFIELD, className, bitSetFieldName, "I")); // this.bitsetN = ...; stack=2-2=0
+            insns.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, className, field + Utils.setFieldMethodSuffix, "()V")); // this.x$set() // stack=1-1=0
 
             meth.instructions.insert(insns);
 
@@ -116,6 +105,28 @@ public class PojoTransformer extends AbstractTransformer {
                     insns.add(label);
                     insns.add(new InsnNode(Opcodes.ICONST_1)); // true stack=1
                     insns.add(new InsnNode(Opcodes.IRETURN)); // return true; stack=1-1=0
+
+                    meth.instructions = insns;
+                    node.methods.add(meth);
+                }
+                // setField
+                {
+                    MethodNode meth = new MethodNode(Opcodes.ACC_PUBLIC | Opcodes.ACC_SYNTHETIC,
+                        field + Utils.setFieldMethodSuffix, "()V", "()V", null);
+                    // this.bitsetN = this.bitsetN | (1 << x)
+                    InsnList insns = new InsnList();
+
+                    insns.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this stack=1
+                    // {
+                    insns.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this stack=1+1=2
+                    insns.add(new FieldInsnNode(Opcodes.GETFIELD, className, bitSetFieldName, "I")); // this.bitsetN stack=2-1+1=2
+                    insns.add(new InsnNode(Opcodes.ICONST_1)); // 1 stack=2+1=3
+                    insns.add(new IntInsnNode(Opcodes.BIPUSH, shift)); // x stack=3+1=4
+                    insns.add(new InsnNode(Opcodes.ISHL)); // 1 << x stack=4-2+1=3
+                    insns.add(new InsnNode(Opcodes.IOR)); // stack=3-2+1=2
+                    // }
+                    insns.add(new FieldInsnNode(Opcodes.PUTFIELD, className, bitSetFieldName, "I")); // this.bitsetN = ...; stack=2-2=0
+                    insns.add(new InsnNode(Opcodes.RETURN)); // return;
 
                     meth.instructions = insns;
                     node.methods.add(meth);

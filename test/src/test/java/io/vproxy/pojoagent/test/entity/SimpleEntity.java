@@ -207,6 +207,50 @@ public class SimpleEntity implements Entity, PojoUpdateFrom<SimpleEntity>, PojoV
 
     @PojoCaller
     @Override
+    public void doSet2(BitSet bitset) {
+        if (bitset.get(0)) {
+            PojoAgent.setField(a);
+        }
+        if (bitset.get(1)) {
+            PojoAgent.setField(i);
+        }
+        if (bitset.get(2)) {
+            PojoAgent.setField(l);
+        }
+        if (bitset.get(3)) {
+            PojoAgent.setField(d);
+        }
+        if (bitset.get(4)) {
+            PojoAgent.setField(f);
+        }
+        if (bitset.get(5)) {
+            PojoAgent.setField(c);
+        }
+        if (bitset.get(6)) {
+            PojoAgent.setField(z);
+        }
+        if (bitset.get(7)) {
+            PojoAgent.setField(s);
+        }
+        if (bitset.get(8)) {
+            PojoAgent.setField(b);
+        }
+        if (bitset.get(9)) {
+            PojoAgent.setField(aa);
+        }
+        if (bitset.get(10)) {
+            PojoAgent.setField(ai);
+        }
+        if (bitset.get(11)) {
+            PojoAgent.setField(aaa);
+        }
+        if (bitset.get(12)) {
+            PojoAgent.setField(aii);
+        }
+    }
+
+    @PojoCaller
+    @Override
     public void doUnset(BitSet bitset) {
         if (bitset.get(0)) {
             PojoAgent.unsetField(this.getA());
