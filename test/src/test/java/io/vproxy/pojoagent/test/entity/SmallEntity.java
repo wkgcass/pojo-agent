@@ -1,8 +1,6 @@
 package io.vproxy.pojoagent.test.entity;
 
-import io.vproxy.pojoagent.api.Pojo;
-import io.vproxy.pojoagent.api.PojoAgent;
-import io.vproxy.pojoagent.api.PojoCaller;
+import io.vproxy.pojoagent.api.*;
 
 import java.util.BitSet;
 
@@ -109,5 +107,17 @@ public class SmallEntity implements Entity {
         } else {
             assertFalse(PojoAgent.fieldIsSet(ok));
         }
+    }
+
+    @PojoAutoImpl
+    @Override
+    public void setAllFields() {
+        throw new RequirePojoAutoImplException();
+    }
+
+    @PojoAutoImpl
+    @Override
+    public void unsetAllFields() {
+        throw new RequirePojoAutoImplException();
     }
 }

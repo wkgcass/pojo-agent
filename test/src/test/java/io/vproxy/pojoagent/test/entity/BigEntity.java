@@ -2316,4 +2316,16 @@ public class BigEntity implements Entity {
         postValidateCalled = result;
         return result;
     }
+
+    @PojoAutoImpl
+    @Override
+    public void setAllFields() {
+        throw new RequirePojoAutoImplException();
+    }
+
+    @PojoAutoImpl
+    @Override
+    public void unsetAllFields() {
+        throw new RequirePojoAutoImplException();
+    }
 }

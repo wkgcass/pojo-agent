@@ -195,6 +195,16 @@ public class PojoTransformer extends AbstractTransformer {
                 && meth.desc.equals("(I)" + validationResultDesc)) {
                 enhanceValidate(node, meth);
                 ret = true;
+            } else if (!Utils.isStatic(meth.access) && Utils.isPublic(meth.access)
+                && meth.name.equals("setAllFields")
+                && meth.desc.equals("()V")) {
+                enhanceSetUnsetAll(node, meth, bitsetFields, -1);
+                ret = true;
+            } else if (!Utils.isStatic(meth.access) && Utils.isPublic(meth.access)
+                && meth.name.equals("unsetAllFields")
+                && meth.desc.equals("()V")) {
+                enhanceSetUnsetAll(node, meth, bitsetFields, 0);
+                ret = true;
             }
         }
         return ret;
@@ -322,6 +332,20 @@ public class PojoTransformer extends AbstractTransformer {
             insns.add(new InsnNode(Opcodes.ARETURN)); // stack=1-1=0
         }
         meth.instructions = insns;
+    }
+
+    private void enhanceSetUnsetAll(ClassNode node, MethodNode meth, ArrayList<ArrayList<String>> bitsetFields, int value) {
+        String className = node.name;
+        InsnList insns = new InsnList();
+        for (int i = 0; i < bitsetFields.size(); ++i) {
+            String bitSetFieldName = Utils.fieldIsSetBitSetPrefix + (i + 1);
+            insns.add(new VarInsnNode(Opcodes.ALOAD, 0)); // this, stack=1
+            insns.add(new IntInsnNode(Opcodes.BIPUSH, value)); // -1 or 0, stack=1+1=2
+            insns.add(new FieldInsnNode(Opcodes.PUTFIELD, className, bitSetFieldName, "I")); // this.x = -1 or 0, stack=2-2=0
+        }
+        insns.add(new InsnNode(Opcodes.RETURN));
+        meth.instructions = insns;
+        Utils.log("method enhanced: " + className + "." + meth.name + meth.desc);
     }
 
     private static int getAnnoValue(AnnotationNode anno) {

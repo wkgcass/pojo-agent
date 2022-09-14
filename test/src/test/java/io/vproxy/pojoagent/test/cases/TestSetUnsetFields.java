@@ -12,7 +12,7 @@ import java.util.function.Supplier;
 public class TestSetUnsetFields {
     @Test
     public void smallSetUnset() {
-        testSetUnset(1, SmallEntity::new);
+        testSetUnset(2, SmallEntity::new);
     }
 
     @Test
@@ -40,48 +40,57 @@ public class TestSetUnsetFields {
     }
 
     private static void recursiveTestSetUnset(final int fieldCount, int indexToFill, int[] indexes, Supplier<Entity> supplier) {
-        if (indexToFill == indexes.length) {
-            for (int i = 0; i < indexes.length; ++i) {
-                for (int x = 0; x < 2; ++x) {
-                    Entity entity = supplier.get();
-                    BitSet bitset = new BitSet();
-                    for (int index : indexes) {
-                        bitset.set(index);
-                    }
-                    if (x == 0) {
-                        entity.doSet(bitset);
-                    } else {
-                        entity.doSet2(bitset);
-                    }
-                    entity.doAssert(bitset);
-                    entity.doAssertByField(bitset);
-
-                    for (int index : indexes) {
-                        BitSet unsetBitset = new BitSet();
-                        unsetBitset.set(index);
-                        entity.doUnset(unsetBitset);
-
-                        bitset.clear(index);
-                        entity.doAssert(bitset);
-                        entity.doAssertByField(bitset);
-                    }
-
-                    for (int index : indexes) {
-                        BitSet unsetBitset = new BitSet();
-                        unsetBitset.set(index);
-                        entity.doUnsetByField(unsetBitset);
-
-                        bitset.clear(index);
-                        entity.doAssert(bitset);
-                        entity.doAssertByField(bitset);
-                    }
-                }
+        if (indexToFill != indexes.length) {
+            for (int i = (indexToFill == 0 ? 0 : indexes[indexToFill - 1] + 1); i <= fieldCount; ++i) {
+                indexes[indexToFill] = i;
+                recursiveTestSetUnset(fieldCount, indexToFill + 1, indexes, supplier);
             }
             return;
         }
-        for (int i = (indexToFill == 0 ? 0 : indexes[indexToFill - 1] + 1); i <= fieldCount; ++i) {
-            indexes[indexToFill] = i;
-            recursiveTestSetUnset(fieldCount, indexToFill + 1, indexes, supplier);
+        for (int doSetMode = 0; doSetMode < 2; ++doSetMode) {
+            Entity entity = supplier.get();
+            BitSet bitset = new BitSet();
+
+            entity.setAllFields();
+            bitset.set(0, fieldCount);
+            entity.doAssert(bitset);
+            entity.doAssertByField(bitset);
+
+            entity.unsetAllFields();
+            bitset.clear();
+            entity.doAssert(bitset);
+            entity.doAssertByField(bitset);
+
+            for (int index : indexes) {
+                bitset.set(index);
+            }
+            if (doSetMode == 0) {
+                entity.doSet(bitset);
+            } else {
+                entity.doSet2(bitset);
+            }
+            entity.doAssert(bitset);
+            entity.doAssertByField(bitset);
+
+            for (int index : indexes) {
+                BitSet unsetBitset = new BitSet();
+                unsetBitset.set(index);
+                entity.doUnset(unsetBitset);
+
+                bitset.clear(index);
+                entity.doAssert(bitset);
+                entity.doAssertByField(bitset);
+            }
+
+            for (int index : indexes) {
+                BitSet unsetBitset = new BitSet();
+                unsetBitset.set(index);
+                entity.doUnsetByField(unsetBitset);
+
+                bitset.clear(index);
+                entity.doAssert(bitset);
+                entity.doAssertByField(bitset);
+            }
         }
     }
 }
