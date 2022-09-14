@@ -101,7 +101,7 @@ public class MyEntity implements PojoValidate {
 
   @MustExist(CREATE)     // must exist when creating
   @MustNotExist(~CREATE) // must not exist except creating
-  @MustNotNull(CREATE)   // must not be null when creating
+  @MustNotNull(CREATE)   // must exist and must not be null when creating
   private String name;
 
   @PojoAutoImpl
@@ -118,13 +118,39 @@ You may leave the annotation argument empty, which will be 0 by default, and use
 
 The result of the `validate` method is a non-null object: `ValidationResult`.
 
+#### step 1.3: setAllFields and unsetAllFields
+
+Pojo-agent provides you a way to consider all fields are set or not set (if a field is `set`, the field existence assertion against that field will pass).
+
+You may let your entity class implement the template interfaces `PojoSetAllFields` or `PojoUnsetAllFields`, or you can simply add methods with the same signatures defined in these interfaces.
+
+```java
+@Pojo
+public class MyEntity implements PojoSetAllFields, PojoUnsetAllFields {
+  // fields ...
+  // getters setters ...
+
+  @PojoAutoImpl
+  @Override
+  public void setAllFields() {
+    throw new RequirePojoAutoImplException();
+  }
+
+  @PojoAutoImpl
+  @Override
+  public void unsetAllFields() {
+    throw new RequirePojoAutoImplException();
+  }
+}
+```
+
 ### step 2
 
-Add `@PojoCaller` on the method which requires enhancement:
+Add `@PojoCaller` on the method which uses functions in `PojoAgent` helper class:
 
 ```java
 @PojoCaller
-public void updateMyEntity(MyEntity entity) {
+public void manipulateMyEntity(MyEntity entity) {
   // ...
 }
 ```
@@ -141,6 +167,10 @@ PojoAgent.fieldIsSet(entity.getId())
 PojoAgent.unsetField(entity.getId())
 // then you will get `false` from `fieldIsSet` call after calling `unsetField`
 // However note that the value of this property will not be modified, you can still get correct result from `getId()`
+
+// set the field without touching it's setter
+PojoAgent.setField(entity.getId())
+// then you will get `true` from `fieldIsSet` call after calling `setField`
 ```
 
 ### step 4
