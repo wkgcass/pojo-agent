@@ -33,9 +33,15 @@ implementation group: 'io.vproxy', name: 'pojo-agent-api', version: '1.2.0'
 The agent is in `build/libs/pojo-agent.jar`.  
 You can also get the pre-built agent in the release pages.
 
+## test
+
+```
+./gradlew clean suite
+```
+
 ## how to use
 
-Works on java 8, 11, 17, and kotlin.
+Works on java 8, 11, 17, 21, and kotlin.
 
 ### step 1
 
